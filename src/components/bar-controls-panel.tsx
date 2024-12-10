@@ -1,12 +1,5 @@
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
 export function BarControlsPanel() {
@@ -22,7 +15,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">MaxDB</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -35,7 +28,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Min Frequency</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -48,7 +41,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Max Frequency</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -61,7 +54,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Smoothing</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -74,7 +67,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Width</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -87,7 +80,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Height</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -100,7 +93,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Shadow Height</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -137,7 +130,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">X</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="0" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[0]}
                   max={100}
@@ -149,7 +142,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Y</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="0" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[0]}
                   max={100}
@@ -162,7 +155,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Rotation</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="0" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[0]}
                   max={100}
@@ -175,7 +168,7 @@ export function BarControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Opacity</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="0" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[0]}
                   max={100}

@@ -15,19 +15,14 @@ export function ImageControlsPanel() {
               <label className="text-sm text-zinc-400">Image</label>
 
               <div className="flex items-center gap-2 mt-1">
-                <Input
-                  id="picture"
-                  type="file"
-                  value="1"
-                  className="w-16 bg-zinc-900"
-                />
+                <Input id="picture" type="file" className="w-16 bg-zinc-900" />
               </div>
             </div>
 
             <div>
               <label className="text-sm text-zinc-400">Width</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -40,7 +35,7 @@ export function ImageControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Height</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -53,7 +48,7 @@ export function ImageControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">X</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -66,7 +61,7 @@ export function ImageControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Y</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -79,7 +74,7 @@ export function ImageControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Zoom</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -92,7 +87,7 @@ export function ImageControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Rotation</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
@@ -105,7 +100,7 @@ export function ImageControlsPanel() {
             <div>
               <label className="text-sm text-zinc-400">Opacity</label>
               <div className="flex items-center gap-2 mt-1">
-                <Input type="number" value="1" className="w-16 bg-zinc-900" />
+                <Input type="number" className="w-16 bg-zinc-900" />
                 <Slider
                   defaultValue={[100]}
                   max={100}
