@@ -2,22 +2,24 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Pause, Play, Volume2, RotateCcw } from "lucide-react";
+import { useAudioControls } from "@/hooks/useAudioControls";
 
 interface TimelineProps {
-  isPlaying: boolean;
-  setIsPlaying: (isPlaying: boolean) => void;
-  currentTime: number;
-  setCurrentTime: (time: number) => void;
-  duration: number;
+  audioElement: HTMLAudioElement | null;
 }
 
-export function Timeline({
-  isPlaying,
-  setIsPlaying,
-  currentTime,
-  setCurrentTime,
-  duration,
-}: TimelineProps) {
+export function Timeline({ audioElement }: TimelineProps) {
+  const {
+    isPlaying,
+    currentTime,
+    duration,
+    volume,
+    togglePlay,
+    seekTo,
+    setVolumeLevel,
+    restart,
+  } = useAudioControls(audioElement);
+
   return (
     <div className="h-20 bg-zinc-900 border-t border-zinc-800 p-4 flex flex-col gap-2">
       <div className="flex items-center gap-4">
@@ -25,7 +27,7 @@ export function Timeline({
           variant="ghost"
           size="icon"
           className="text-zinc-400 hover:text-white"
-          onClick={() => setIsPlaying(!isPlaying)}
+          onClick={togglePlay}
         >
           {isPlaying ? (
             <Pause className="h-4 w-4" />
@@ -35,14 +37,20 @@ export function Timeline({
         </Button>
         <div className="flex items-center gap-2">
           <Volume2 className="h-4 w-4 text-zinc-400" />
-          <Slider defaultValue={[100]} max={100} step={1} className="w-24" />
+          <Slider
+            value={[volume]}
+            max={100}
+            step={1}
+            className="w-24"
+            onValueChange={([value]) => setVolumeLevel(value)}
+          />
         </div>
         <div className="flex-1">
           <Slider
             value={[currentTime]}
-            max={duration}
-            step={1}
-            onValueChange={([value]) => setCurrentTime(value)}
+            max={duration || 100}
+            step={0.1}
+            onValueChange={([value]) => seekTo(value)}
           />
         </div>
         <div className="text-sm text-zinc-400">
@@ -52,6 +60,7 @@ export function Timeline({
           variant="ghost"
           size="icon"
           className="text-zinc-400 hover:text-white"
+          onClick={restart}
         >
           <RotateCcw className="h-4 w-4" />
         </Button>

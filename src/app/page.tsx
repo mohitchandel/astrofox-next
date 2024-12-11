@@ -8,6 +8,8 @@ import { BarControlsPanel } from "@/components/bar-controls-panel";
 import { ImageControlsPanel } from "@/components/image-controls-panel";
 import { AudioControlsPanel } from "@/components/audio-controls-panel";
 import { JSX } from "react";
+import { BarSpectrumSettings } from "@/types/bar-spectrum";
+import AudioVisualizer from "@/components/audio-visualizer";
 
 interface TextStyle {
   text: string;
@@ -26,6 +28,8 @@ export default function Home(): JSX.Element {
   const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
   const [currentTime, setCurrentTime] = React.useState<number>(0);
   const [duration] = React.useState<number>(60);
+  const [audioElement, setAudioElement] =
+    React.useState<HTMLAudioElement | null>(null);
   const [textStyle, setTextStyle] = React.useState<TextStyle>({
     text: "hello",
     size: 40,
@@ -39,9 +43,37 @@ export default function Home(): JSX.Element {
     opacity: 100,
   });
 
+  const [barSpectrumSettings, setBarSpectrumSettings] =
+    React.useState<BarSpectrumSettings>({
+      maxDb: -20,
+      minFrequency: 20,
+      maxFrequency: 20000,
+      smoothing: 0.8,
+      width: 800,
+      height: 200,
+      shadowHeight: 50,
+      barWidth: 15,
+      isBarWidthAuto: true,
+      barSpacing: 5,
+      isBarSpacingAuto: true,
+      barColor: "#00ff00",
+      shadowColor: "#003300",
+      x: 0,
+      y: 0,
+      rotation: 0,
+      opacity: 100,
+    });
+
   const handleTextChange = React.useCallback((newTextStyle: TextStyle) => {
     setTextStyle(newTextStyle);
   }, []);
+
+  const handleAudioElementCreated = React.useCallback(
+    (element: HTMLAudioElement) => {
+      setAudioElement(element);
+    },
+    []
+  );
 
   return (
     <div className="h-screen bg-zinc-950 text-zinc-100 flex flex-col overflow-hidden">
@@ -60,6 +92,10 @@ export default function Home(): JSX.Element {
           >
             {textStyle.text}
           </div>
+          <AudioVisualizer
+            audioElement={audioElement}
+            settings={barSpectrumSettings}
+          />
         </div>
 
         <div className="w-80 bg-zinc-900 border-l border-zinc-800 flex flex-col">
@@ -68,20 +104,16 @@ export default function Home(): JSX.Element {
           </div>
           <div className="flex-1 overflow-y-auto">
             <TextControlsPanel onTextChange={handleTextChange} />
-            <BarControlsPanel />
+            <AudioControlsPanel
+              onAudioElementCreated={handleAudioElementCreated}
+            />
+            <BarControlsPanel onSettingsChange={setBarSpectrumSettings} />
             <ImageControlsPanel />
-            <AudioControlsPanel />
           </div>
         </div>
       </div>
 
-      <Timeline
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-        currentTime={currentTime}
-        setCurrentTime={setCurrentTime}
-        duration={duration}
-      />
+      <Timeline audioElement={audioElement} />
     </div>
   );
 }

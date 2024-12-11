@@ -1,10 +1,17 @@
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, JSX } from "react";
+import { useState, useEffect, useRef, JSX } from "react";
 
-export function AudioControlsPanel(): JSX.Element {
+interface AudioControlsPanelProps {
+  onAudioElementCreated: (audioElement: HTMLAudioElement) => void;
+}
+
+export function AudioControlsPanel({
+  onAudioElementCreated,
+}: AudioControlsPanelProps): JSX.Element {
   const [audioSrc, setAudioSrc] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -14,6 +21,14 @@ export function AudioControlsPanel(): JSX.Element {
       setFileName(file.name);
     }
   };
+
+  useEffect(() => {
+    if (audioSrc) {
+      const audio = document.getElementById("audioPlayer") as HTMLAudioElement;
+      audioRef.current = audio;
+      onAudioElementCreated(audio);
+    }
+  }, [audioSrc, onAudioElementCreated]);
 
   // Cleanup URL on unmount
   useEffect(() => {
@@ -25,12 +40,11 @@ export function AudioControlsPanel(): JSX.Element {
   }, [audioSrc]);
 
   const togglePlay = () => {
-    const audio = document.getElementById("audioPlayer") as HTMLAudioElement;
-    if (audio) {
+    if (audioRef.current) {
       if (isPlaying) {
-        audio.pause();
+        audioRef.current.pause();
       } else {
-        audio.play().catch((error) => {
+        audioRef.current.play().catch((error) => {
           console.error("Error playing audio:", error);
         });
       }
