@@ -10,6 +10,7 @@ import { AudioControlsPanel } from "@/components/audio-controls-panel";
 import { JSX } from "react";
 import { BarSpectrumSettings } from "@/types/bar-spectrum";
 import AudioVisualizer from "@/components/audio-visualizer";
+import WaveSurferVisualizer from "@/components/wave-surfer";
 
 interface TextStyle {
   text: string;
@@ -27,6 +28,8 @@ interface TextStyle {
 export default function Home(): JSX.Element {
   const [audioElement, setAudioElement] =
     React.useState<HTMLAudioElement | null>(null);
+  const [audioUrl, setAudioUrl] = React.useState<string>("/path-to-audio.mp3");
+
   const [textStyle, setTextStyle] = React.useState<TextStyle>({
     text: "hello",
     size: 40,
@@ -68,31 +71,37 @@ export default function Home(): JSX.Element {
   const handleAudioElementCreated = React.useCallback(
     (element: HTMLAudioElement) => {
       setAudioElement(element);
+      setAudioUrl(element.src || "/path-to-audio.mp3");
     },
     []
   );
 
   return (
-    <div className="h-screen bg-zinc-950 text-zinc-100 flex flex-col overflow-hidden">
-      <div className="flex flex-1 min-h-0">
-        <div className="flex-1 p-4 flex items-center justify-center bg-black">
-          <div
-            style={{
-              fontFamily: textStyle.font,
-              fontSize: `${textStyle.size}px`,
-              fontStyle: textStyle.isItalic ? "italic" : "normal",
-              fontWeight: textStyle.isBold ? "bold" : "normal",
-              transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
-              color: textStyle.color,
-              opacity: textStyle.opacity / 100,
-            }}
-          >
-            {textStyle.text}
+    <div className="h-screen bg-slate-900 text-zinc-100 flex flex-col overflow-hidden">
+      <div className="flex flex-1 min-h-0 justify-between">
+        <div className="flex flex-col h-full w-full">
+          <div className="flex-1 p-4 flex items-center justify-center ">
+            <div
+              style={{
+                fontFamily: textStyle.font,
+                fontSize: `${textStyle.size}px`,
+                fontStyle: textStyle.isItalic ? "italic" : "normal",
+                fontWeight: textStyle.isBold ? "bold" : "normal",
+                transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
+                color: textStyle.color,
+                opacity: textStyle.opacity / 100,
+              }}
+            >
+              {textStyle.text}
+            </div>
+            <AudioVisualizer
+              audioElement={audioElement}
+              settings={barSpectrumSettings}
+            />
           </div>
-          <AudioVisualizer
-            audioElement={audioElement}
-            settings={barSpectrumSettings}
-          />
+          <div className="flex flex-col p-4 w-1/2 bg-transparent mx-auto">
+            {audioUrl && <WaveSurferVisualizer audioElement={audioElement} />}
+          </div>
         </div>
 
         <div className="w-80 bg-zinc-900 border-l border-zinc-800 flex flex-col">
