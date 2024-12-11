@@ -67,7 +67,6 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
     };
   }, [audioElement, settings.smoothing, settings.maxDb]);
 
-  // Handle play/pause events
   useEffect(() => {
     if (!audioElement) return;
 
