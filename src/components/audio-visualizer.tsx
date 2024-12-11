@@ -12,6 +12,12 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const settingsRef = useRef<BarSpectrumSettings>(settings);
+
+  // Update the settingsRef whenever settings change
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   useEffect(() => {
     if (!audioElement) return;
@@ -36,9 +42,6 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
 
       // Configure analyzer
       analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = settings.smoothing;
-      analyser.minDecibels = -90;
-      analyser.maxDecibels = settings.maxDb;
 
       // Store references
       audioContextRef.current = audioContext;
@@ -65,7 +68,7 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
         audioContextRef.current?.close();
       }
     };
-  }, [audioElement, settings.smoothing, settings.maxDb]);
+  }, [audioElement]);
 
   useEffect(() => {
     if (!audioElement) return;
@@ -93,59 +96,69 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const width = settings.width;
-    const height = settings.height;
-
-    // Set canvas size
-    canvas.width = width;
-    canvas.height = height + settings.shadowHeight;
-
-    // Get frequency data
     const analyser = analyserRef.current;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
     const renderFrame = () => {
+      const {
+        width,
+        height,
+        shadowHeight,
+        barColor,
+        shadowColor,
+        isBarWidthAuto,
+        barWidth,
+        isBarSpacingAuto,
+        barSpacing,
+        x,
+        y,
+        rotation,
+        opacity,
+      } = settingsRef.current;
+
       analyser.getByteFrequencyData(dataArray);
 
       // Clear canvas
-      ctx.clearRect(0, 0, width, height + settings.shadowHeight);
+      canvas.width = width;
+      canvas.height = height + shadowHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Calculate bar width and spacing
-      const barWidth = settings.isBarWidthAuto
+      const calculatedBarWidth = isBarWidthAuto
         ? (width / bufferLength) * 2.5
-        : settings.barWidth;
+        : barWidth;
 
-      const barSpacing = settings.isBarSpacingAuto
-        ? barWidth * 0.3
-        : settings.barSpacing;
+      const calculatedBarSpacing = isBarSpacingAuto
+        ? calculatedBarWidth * 0.3
+        : barSpacing;
 
       // Transform context based on settings
       ctx.save();
-      ctx.translate(settings.x, settings.y);
-      ctx.rotate((settings.rotation * Math.PI) / 180);
-      ctx.globalAlpha = settings.opacity / 100;
+      ctx.translate(x, y);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.globalAlpha = opacity / 100;
 
       // Draw bars and shadows
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * height;
-        const x = i * (barWidth + barSpacing);
+        const barX = i * (calculatedBarWidth + calculatedBarSpacing);
 
         // Draw shadow
         const gradient = ctx.createLinearGradient(
           0,
           height,
           0,
-          height + settings.shadowHeight
+          height + shadowHeight
         );
-        gradient.addColorStop(0, settings.shadowColor);
+        gradient.addColorStop(0, shadowColor);
         gradient.addColorStop(1, "transparent");
         ctx.fillStyle = gradient;
-        ctx.fillRect(x, height, barWidth, settings.shadowHeight);
+        ctx.fillRect(barX, height, calculatedBarWidth, shadowHeight);
 
         // Draw bar
-        ctx.fillStyle = settings.barColor;
-        ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+        ctx.fillStyle = barColor;
+        ctx.fillRect(barX, height - barHeight, calculatedBarWidth, barHeight);
       }
 
       ctx.restore();
