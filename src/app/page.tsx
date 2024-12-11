@@ -25,9 +25,6 @@ interface TextStyle {
 }
 
 export default function Home(): JSX.Element {
-  const [isPlaying, setIsPlaying] = React.useState<boolean>(false);
-  const [currentTime, setCurrentTime] = React.useState<number>(0);
-  const [duration] = React.useState<number>(60);
   const [audioElement, setAudioElement] =
     React.useState<HTMLAudioElement | null>(null);
   const [textStyle, setTextStyle] = React.useState<TextStyle>({

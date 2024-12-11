@@ -75,51 +75,26 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
             </div>
 
             <div>
-              <Label className="text-sm text-zinc-400">
-                Min Frequency (Hz)
-              </Label>
+              <Label className="text-sm text-zinc-400">Smoothing</Label>
               <div className="flex items-center gap-2 mt-1">
                 <Input
                   type="number"
-                  value={settings.minFrequency}
+                  value={settings.smoothing}
                   onChange={(e) =>
-                    updateSetting("minFrequency", Number(e.target.value))
+                    updateSetting("smoothing", Number(e.target.value))
                   }
                   className="w-16 bg-zinc-900"
+                  step="0.1"
+                  min="0"
+                  max="1"
                 />
                 <Slider
-                  value={[settings.minFrequency]}
-                  min={20}
-                  max={1000}
+                  value={[settings.smoothing * 100]}
+                  min={0}
+                  max={100}
                   step={1}
                   onValueChange={([value]) =>
-                    updateSetting("minFrequency", value)
-                  }
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-sm text-zinc-400">
-                Max Frequency (Hz)
-              </Label>
-              <div className="flex items-center gap-2 mt-1">
-                <Input
-                  type="number"
-                  value={settings.maxFrequency}
-                  onChange={(e) =>
-                    updateSetting("maxFrequency", Number(e.target.value))
-                  }
-                  className="w-16 bg-zinc-900"
-                />
-                <Slider
-                  value={[settings.maxFrequency]}
-                  min={1000}
-                  max={20000}
-                  step={100}
-                  onValueChange={([value]) =>
-                    updateSetting("maxFrequency", value)
+                    updateSetting("smoothing", value / 100)
                   }
                   className="flex-1"
                 />
@@ -137,11 +112,35 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
                   }
                   className="w-16 bg-zinc-900"
                   disabled={settings.isBarWidthAuto}
+                  min="1"
                 />
                 <Switch
                   checked={settings.isBarWidthAuto}
                   onCheckedChange={(checked) =>
                     updateSetting("isBarWidthAuto", checked)
+                  }
+                />
+                <span className="text-sm text-zinc-400">Auto</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label className="text-sm text-zinc-400">Bar Spacing</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={settings.barSpacing}
+                  onChange={(e) =>
+                    updateSetting("barSpacing", Number(e.target.value))
+                  }
+                  className="w-16 bg-zinc-900"
+                  disabled={settings.isBarSpacingAuto}
+                  min="0"
+                />
+                <Switch
+                  checked={settings.isBarSpacingAuto}
+                  onCheckedChange={(checked) =>
+                    updateSetting("isBarSpacingAuto", checked)
                   }
                 />
                 <span className="text-sm text-zinc-400">Auto</span>
@@ -168,55 +167,93 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">X</Label>
-              <Slider
-                value={[settings.maxFrequency]}
-                min={1000}
-                max={20000}
-                step={100}
-                onValueChange={([value]) => updateSetting("x", value)}
-                className="flex-1"
-              />
+            <div>
+              <Label className="text-sm text-zinc-400">Position X</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  type="number"
+                  value={settings.x}
+                  onChange={(e) => updateSetting("x", Number(e.target.value))}
+                  className="w-16 bg-zinc-900"
+                />
+                <Slider
+                  value={[settings.x]}
+                  min={-400}
+                  max={400}
+                  step={1}
+                  onValueChange={([value]) => updateSetting("x", value)}
+                  className="flex-1"
+                />
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">Y</Label>
-              <Slider
-                value={[settings.maxFrequency]}
-                min={1000}
-                max={20000}
-                step={100}
-                onValueChange={([value]) => updateSetting("y", value)}
-                className="flex-1"
-              />
+            <div>
+              <Label className="text-sm text-zinc-400">Position Y</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  type="number"
+                  value={settings.y}
+                  onChange={(e) => updateSetting("y", Number(e.target.value))}
+                  className="w-16 bg-zinc-900"
+                />
+                <Slider
+                  value={[settings.y]}
+                  min={-400}
+                  max={400}
+                  step={1}
+                  onValueChange={([value]) => updateSetting("y", value)}
+                  className="flex-1"
+                />
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">Rotation</Label>
-              <Slider
-                value={[settings.maxFrequency]}
-                min={1000}
-                max={20000}
-                step={100}
-                onValueChange={([value]) => updateSetting("rotation", value)}
-                className="flex-1"
-              />
+            <div>
+              <Label className="text-sm text-zinc-400">
+                Rotation (degrees)
+              </Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  type="number"
+                  value={settings.rotation}
+                  onChange={(e) =>
+                    updateSetting("rotation", Number(e.target.value))
+                  }
+                  className="w-16 bg-zinc-900"
+                />
+                <Slider
+                  value={[settings.rotation]}
+                  min={-180}
+                  max={180}
+                  step={1}
+                  onValueChange={([value]) => updateSetting("rotation", value)}
+                  className="flex-1"
+                />
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">Opacity</Label>
-              <Slider
-                value={[settings.maxFrequency]}
-                min={1000}
-                max={20000}
-                step={100}
-                onValueChange={([value]) => updateSetting("opacity", value)}
-                className="flex-1"
-              />
+            <div>
+              <Label className="text-sm text-zinc-400">Opacity (%)</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  type="number"
+                  value={settings.opacity}
+                  onChange={(e) =>
+                    updateSetting("opacity", Number(e.target.value))
+                  }
+                  className="w-16 bg-zinc-900"
+                  min="0"
+                  max="100"
+                />
+                <Slider
+                  value={[settings.opacity]}
+                  min={0}
+                  max={100}
+                  step={1}
+                  onValueChange={([value]) => updateSetting("opacity", value)}
+                  className="flex-1"
+                />
+              </div>
             </div>
-
-            {/* Add remaining controls similarly */}
           </div>
         </div>
       </div>
