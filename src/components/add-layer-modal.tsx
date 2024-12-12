@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +14,6 @@ import {
   Box,
   Shapes,
 } from "lucide-react";
-import { X } from "lucide-react";
 
 interface AddLayerModalProps {
   isOpen: boolean;

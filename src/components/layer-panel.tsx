@@ -3,7 +3,6 @@
 import {
   ChevronDown,
   Eye,
-  Plus,
   Type,
   BarChart3,
   Image,
@@ -20,7 +19,7 @@ export function LayersPanel() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSceneExpanded, setIsSceneExpanded] = useState(true);
 
-  function handleLayerSelect(type: string): void {
+  function handleLayerSelect(): void {
     throw new Error("Function not implemented.");
   }
 
