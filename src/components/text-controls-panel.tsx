@@ -55,7 +55,7 @@ export function TextControlsPanel({
   }, [textStyle, onTextChange]);
 
   return (
-    <div className="border-t border-zinc-800 p-4">
+    <div className="border-t bg-[#1E1E1E] p-4">
       <div className="space-y-6">
         <div>
           <div className="flex items-center justify-between mb-4">

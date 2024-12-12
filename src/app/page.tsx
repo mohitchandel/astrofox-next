@@ -29,6 +29,10 @@ export default function Home(): JSX.Element {
   const [audioElement, setAudioElement] =
     React.useState<HTMLAudioElement | null>(null);
   const [audioUrl, setAudioUrl] = React.useState<string>("/path-to-audio.mp3");
+  const [sceneDimensions, setSceneDimensions] = React.useState({
+    width: 854,
+    height: 480,
+  });
 
   const [textStyle, setTextStyle] = React.useState<TextStyle>({
     text: "hello",
@@ -76,33 +80,50 @@ export default function Home(): JSX.Element {
     []
   );
 
+  const handleDimensionsChange = (newDimensions: {
+    width: number;
+    height: number;
+  }) => {
+    setSceneDimensions(newDimensions);
+  };
+
   return (
-    <div className="h-screen bg-slate-900 text-zinc-100 flex flex-col overflow-hidden">
+    <div className="h-screen bg-zinc-700 text-zinc-100 flex flex-col overflow-hidden shadow-lg">
       <div className="flex flex-1 min-h-0 justify-between">
-        <div className="flex flex-col h-full w-full">
-          <div className="flex-1 p-4 flex items-center justify-center ">
+        {/* Scene start*/}
+        <div className="flex flex-col h-full w-full items-center justify-center">
+          <div className="flex-1 p-4 flex items-center justify-center">
             <div
+              className="bg-black relative flex items-center justify-center"
               style={{
-                fontFamily: textStyle.font,
-                fontSize: `${textStyle.size}px`,
-                fontStyle: textStyle.isItalic ? "italic" : "normal",
-                fontWeight: textStyle.isBold ? "bold" : "normal",
-                transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
-                color: textStyle.color,
-                opacity: textStyle.opacity / 100,
+                width: `${sceneDimensions.width}px`,
+                height: `${sceneDimensions.height}px`,
               }}
             >
-              {textStyle.text}
+              <div
+                style={{
+                  fontFamily: textStyle.font,
+                  fontSize: `${textStyle.size}px`,
+                  fontStyle: textStyle.isItalic ? "italic" : "normal",
+                  fontWeight: textStyle.isBold ? "bold" : "normal",
+                  transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
+                  color: textStyle.color,
+                  opacity: textStyle.opacity / 100,
+                }}
+              >
+                {textStyle.text}
+              </div>
+              <AudioVisualizer
+                audioElement={audioElement}
+                settings={barSpectrumSettings}
+              />
             </div>
-            <AudioVisualizer
-              audioElement={audioElement}
-              settings={barSpectrumSettings}
-            />
           </div>
           <div className="flex flex-col p-4 w-1/2 bg-transparent mx-auto">
             {audioUrl && <WaveSurferVisualizer audioElement={audioElement} />}
           </div>
         </div>
+        {/* Scene end*/}
 
         <div className="w-80 bg-zinc-900 border-l border-zinc-800 flex flex-col">
           <div className="flex-none">
@@ -119,7 +140,11 @@ export default function Home(): JSX.Element {
         </div>
       </div>
 
-      <Timeline audioElement={audioElement} />
+      <Timeline
+        audioElement={audioElement}
+        dimensions={sceneDimensions}
+        onDimensionsChange={handleDimensionsChange}
+      />
     </div>
   );
 }
