@@ -13,15 +13,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { AddLayerModal } from "./add-layer-modal";
+import { AddLayerModal } from "../add-layer-modal";
 
 export function LayersPanel() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSceneExpanded, setIsSceneExpanded] = useState(true);
-
-  function handleLayerSelect(): void {
-    throw new Error("Function not implemented.");
-  }
 
   return (
     <div className="flex flex-col bg-[#1E1E1E]">
@@ -108,7 +104,6 @@ export function LayersPanel() {
       <AddLayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSelectLayer={handleLayerSelect}
       />
     </div>
   );

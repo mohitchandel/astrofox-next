@@ -27,10 +27,8 @@ const WaveSurferVisualizer: React.FC<{
 
   React.useEffect(() => {
     if (audioElement && waveSurferRef.current) {
-      // Load audio using legacy method
       waveSurferRef.current.load(audioElement.src);
 
-      // Sync playback with audio element
       const syncPlayback = () => {
         waveSurferRef.current?.playPause();
       };

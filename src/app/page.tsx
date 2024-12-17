@@ -1,16 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { LayersPanel } from "@/components/layer-panel";
 import { Timeline } from "@/components/timeline";
-import { TextControlsPanel } from "@/components/text-controls-panel";
-import { BarControlsPanel } from "@/components/bar-controls-panel";
-import { ImageControlsPanel } from "@/components/image-controls-panel";
-import { AudioControlsPanel } from "@/components/audio-controls-panel";
+import { TextControlsPanel } from "@/components/control-panel/text-controls-panel";
+import { BarControlsPanel } from "@/components/control-panel/bar-controls-panel";
+import { ImageControlsPanel } from "@/components/control-panel/image-controls-panel";
 import { JSX } from "react";
 import { BarSpectrumSettings } from "@/types/bar-spectrum";
-import AudioVisualizer from "@/components/audio-visualizer";
 import WaveSurferVisualizer from "@/components/wave-surfer";
+import { WaveControlsPanel } from "@/components/control-panel/wave-controls-panel";
+import { WaveSettings } from "@/types/wave-settings";
+import { AudioControlsPanel } from "@/components/control-panel/audio-controls-panel";
+import { LayersPanel } from "@/components/control-panel/layer-panel";
+import AudioVisualizer from "@/components/visualizer/audio-visualizer";
+import SoundWaveVisualizer from "@/components/visualizer/sound-wave-visualizer";
 
 interface TextStyle {
   text: string;
@@ -68,6 +71,22 @@ export default function Home(): JSX.Element {
       opacity: 100,
     });
 
+  const [waveSettings, setWaveSettings] = React.useState<WaveSettings>({
+    lineWidth: 1,
+    wavelength: 0,
+    smoothing: 0,
+    stroke: true,
+    strokeColor: "#FFFFFF",
+    fill: false,
+    fillColor: "#FFFFFF",
+    taperEdges: false,
+    width: 854,
+    height: 240,
+    x: 0,
+    y: 0,
+    rotation: 0,
+  });
+
   const handleTextChange = React.useCallback((newTextStyle: TextStyle) => {
     setTextStyle(newTextStyle);
   }, []);
@@ -90,7 +109,6 @@ export default function Home(): JSX.Element {
   return (
     <div className="h-screen bg-zinc-700 text-zinc-100 flex flex-col overflow-hidden shadow-lg">
       <div className="flex flex-1 min-h-0 justify-between">
-        {/* Scene start*/}
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex-1 p-4 flex items-center justify-center">
             <div
@@ -113,9 +131,15 @@ export default function Home(): JSX.Element {
               >
                 {textStyle.text}
               </div>
+
               <AudioVisualizer
                 audioElement={audioElement}
                 settings={barSpectrumSettings}
+              />
+
+              <SoundWaveVisualizer
+                audioElement={audioElement}
+                settings={waveSettings}
               />
             </div>
           </div>
@@ -135,6 +159,7 @@ export default function Home(): JSX.Element {
               onAudioElementCreated={handleAudioElementCreated}
             />
             <BarControlsPanel onSettingsChange={setBarSpectrumSettings} />
+            <WaveControlsPanel onSettingsChange={setWaveSettings} />
             <ImageControlsPanel />
           </div>
         </div>

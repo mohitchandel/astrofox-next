@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { BarSpectrumSettings } from "@/types/bar-spectrum";
+import { useStateContext } from "@/context/StateContext";
 
 interface AudioVisualizerProps {
   audioElement: HTMLAudioElement | null;
@@ -14,11 +15,10 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const settingsRef = useRef<BarSpectrumSettings>(settings);
 
-  // Update the settingsRef whenever settings change
+  const { openBarSpectrum } = useStateContext();
+
   useEffect(() => {
     settingsRef.current = settings;
-
-    // Update canvas dimensions when settings change
     if (canvasRef.current) {
       canvasRef.current.width = settings.width;
       canvasRef.current.height = settings.height + settings.shadowHeight;
@@ -93,7 +93,7 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
     const canvas = canvasRef.current;
     if (!canvas || !analyserRef.current) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     const analyser = analyserRef.current;
@@ -119,6 +119,7 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
 
       analyser.getByteFrequencyData(dataArray);
 
+      // Clear with transparency
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const calculatedBarWidth = isBarWidthAuto
@@ -133,26 +134,34 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
       ctx.translate(width / 2 + x, height / 2 + y);
       ctx.rotate((rotation * Math.PI) / 180);
       ctx.translate(-width / 2, -height / 2);
+
+      // Set composite operation for better blending
+      ctx.globalCompositeOperation = "screen";
       ctx.globalAlpha = opacity / 100;
 
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * height;
         const barX = i * (calculatedBarWidth + calculatedBarSpacing);
 
-        // Draw shadow
         const gradient = ctx.createLinearGradient(
           0,
           height,
           0,
           height + shadowHeight
         );
-        gradient.addColorStop(0, shadowColor);
-        gradient.addColorStop(1, "transparent");
+        const shadowColorWithAlpha = shadowColor
+          .replace(")", ", 0.5)")
+          .replace("rgb", "rgba");
+        gradient.addColorStop(0, shadowColorWithAlpha);
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
         ctx.fillStyle = gradient;
         ctx.fillRect(barX, height, calculatedBarWidth, shadowHeight);
 
-        // Draw bar
-        ctx.fillStyle = barColor;
+        // Draw bar with semi-transparency
+        const barColorWithAlpha = barColor
+          .replace(")", ", 0.8)")
+          .replace("rgb", "rgba");
+        ctx.fillStyle = barColorWithAlpha;
         ctx.fillRect(barX, height - barHeight, calculatedBarWidth, barHeight);
       }
 
@@ -164,6 +173,10 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
     renderFrame();
   };
 
+  if (!openBarSpectrum) {
+    return null;
+  }
+
   return (
     <canvas
       ref={canvasRef}
@@ -174,6 +187,9 @@ const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
         transform: "translate(-50%, -50%)",
         top: "50%",
         left: "50%",
+        pointerEvents: "none",
+        mixBlendMode: "screen",
+        zIndex: 1,
       }}
     />
   );

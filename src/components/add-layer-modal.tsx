@@ -14,24 +14,37 @@ import {
   Box,
   Shapes,
 } from "lucide-react";
+import { useStateContext } from "@/context/StateContext";
 
 interface AddLayerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectLayer: (type: string) => void;
 }
 
-export function AddLayerModal({
-  isOpen,
-  onClose,
-  onSelectLayer,
-}: AddLayerModalProps) {
+export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
+  const { setOpenBarSpectrum, setOpenWave, setOpenImage } = useStateContext();
+
   const displayLayers = [
-    { icon: BarChart3, label: "Bar Spectrum", type: "bar-spectrum" },
+    {
+      icon: BarChart3,
+      label: "Bar Spectrum",
+      type: "bar-spectrum",
+      onclick: () => setOpenBarSpectrum(true),
+    },
     { icon: Box, label: "Geometry (3D)", type: "geometry" },
-    { icon: ImageIcon, label: "Image", type: "image" },
+    {
+      icon: ImageIcon,
+      label: "Image",
+      type: "image",
+      onclick: () => setOpenImage(true),
+    },
     { icon: Shapes, label: "Shape", type: "shape" },
-    { icon: Waves, label: "Sound Wave", type: "sound-wave" },
+    {
+      icon: Waves,
+      label: "Sound Wave",
+      type: "sound-wave",
+      onclick: () => setOpenWave(true),
+    },
     { icon: Type, label: "Text", type: "text" },
     { icon: Waves, label: "Wave Spectrum", type: "wave-spectrum" },
   ];
@@ -41,7 +54,7 @@ export function AddLayerModal({
       <DialogContent className="p-0 gap-0 bg-zinc-900 text-zinc-100 w-[800px] max-w-[90vw]">
         <DialogHeader className="p-0">
           <div className="flex justify-between items-center p-4 border-b border-zinc-800">
-            <DialogTitle className="text-lg font-normal">CONTROLS</DialogTitle>
+            <DialogTitle className="text-lg font-normal">Add Layer</DialogTitle>
           </div>
         </DialogHeader>
 
@@ -68,7 +81,9 @@ export function AddLayerModal({
                   key={layer.type}
                   className="flex flex-col items-center justify-center gap-3 h-32 bg-zinc-950 hover:border-purple-500 hover:bg-zinc-950 rounded-lg"
                   onClick={() => {
-                    onSelectLayer(layer.type);
+                    if (layer.onclick) {
+                      layer.onclick();
+                    }
                     onClose();
                   }}
                 >
@@ -89,5 +104,3 @@ export function AddLayerModal({
     </Dialog>
   );
 }
-
-export default AddLayerModal;
