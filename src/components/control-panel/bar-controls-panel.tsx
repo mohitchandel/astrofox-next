@@ -39,9 +39,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
           </div>
 
           <div className="space-y-4 text-xs">
-            <div className="flex justify-between items-center ">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">MaxDB</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2 col-span-2">
                 <Input
                   value={settings.maxDb}
                   onChange={(e) =>
@@ -60,9 +60,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center ">
+            <div className="grid grid-cols-3 items-center ">
               <label className="text-zinc-400 text-xs">Min Frequency</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.minFrequency}
                   onChange={(e) =>
@@ -83,9 +83,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center ">
+            <div className="grid grid-cols-3 items-center ">
               <label className="text-zinc-400 text-xs">Max Frequency</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.maxFrequency}
                   onChange={(e) =>
@@ -106,9 +106,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Smoothing</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.smoothing}
                   onChange={(e) =>
@@ -130,9 +130,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Height</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.height}
                   onChange={(e) =>
@@ -151,9 +151,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Width</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.width}
                   onChange={(e) =>
@@ -172,9 +172,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Shadow Height</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.shadowHeight}
                   onChange={(e) =>
@@ -195,9 +195,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <Label className="text-zinc-400 text-xs">Bar Width</Label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 col-span-2">
                 <Input
                   value={settings.barWidth}
                   onChange={(e) => updateSetting("barWidth", e.target.value)}
@@ -216,9 +216,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <Label className="text-zinc-400 text-xs">Bar Spacing</Label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 col-span-2">
                 <Input
                   value={settings.barSpacing}
                   onChange={(e) => updateSetting("barSpacing", e.target.value)}
@@ -237,9 +237,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Bar Color</label>
-              <div className="flex items-center gap-2 mt-1 rounded-full">
+              <div className="flex items-center gap-2 mt-1 col-span-2 rounded-full justify-center">
                 <Input
                   type="color"
                   value={settings.barColor}
@@ -249,19 +249,21 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="grid grid-cols-3 items-center">
               <Label className="text-zinc-400 text-xs">Shadow Color</Label>
-              <Input
-                type="color"
-                value={settings.shadowColor}
-                onChange={(e) => updateSetting("shadowColor", e.target.value)}
-                className="w-8 h-8 p-1 rounded-full"
-              />
+              <div className="flex items-center gap-2 mt-1 col-span-2 rounded-full justify-center">
+                <Input
+                  type="color"
+                  value={settings.shadowColor}
+                  onChange={(e) => updateSetting("shadowColor", e.target.value)}
+                  className="w-8 h-8 p-1 rounded-full"
+                />
+              </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">X</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.x}
                   onChange={(e) => updateSetting("x", Number(e.target.value))}
@@ -278,9 +280,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Y</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.y}
                   onChange={(e) => updateSetting("y", Number(e.target.value))}
@@ -297,9 +299,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Rotation</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.rotation}
                   onChange={(e) =>
@@ -318,9 +320,9 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Opacity</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.opacity}
                   onChange={(e) =>

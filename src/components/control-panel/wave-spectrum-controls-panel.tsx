@@ -41,9 +41,9 @@ export function WaveSpectrumControlsPanel({
           </div>
 
           <div className="space-y-4 text-xs">
-            <div className="flex justify-between items-center ">
+            <div className="grid grid-cols-3 items-center ">
               <label className="text-zinc-400 text-xs">MaxDB</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.maxDb}
                   onChange={(e) =>
@@ -62,9 +62,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center ">
+            <div className="grid grid-cols-3 items-center ">
               <label className="text-zinc-400 text-xs">Min Frequency</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.minFrequency}
                   onChange={(e) =>
@@ -85,9 +85,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center ">
+            <div className="grid grid-cols-3 items-center ">
               <label className="text-zinc-400 text-xs">Max Frequency</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.maxFrequency}
                   onChange={(e) =>
@@ -108,9 +108,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Smoothing</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.smoothing}
                   onChange={(e) =>
@@ -132,9 +132,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Height</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.height}
                   onChange={(e) =>
@@ -153,9 +153,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Width</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.width}
                   onChange={(e) =>
@@ -174,7 +174,7 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <Label className="text-zinc-400 text-xs">Stroke</Label>
               <div className="flex items-center gap-2">
                 <Switch
@@ -188,9 +188,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Stroke Color</label>
-              <div className="flex items-center gap-2 mt-1 rounded-full">
+              <div className="flex items-center gap-2 mt-1 col-span-2 rounded-full justify-center">
                 <Input
                   type="color"
                   value={settings.strokeColor}
@@ -200,9 +200,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Fill Color</label>
-              <div className="flex items-center gap-2 mt-1 rounded-full">
+              <div className="flex items-center gap-2 mt-1 col-span-2 rounded-full justify-center">
                 <Input
                   type="color"
                   value={settings.fillColor}
@@ -212,13 +212,13 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <Label className="text-zinc-400 text-xs">Taper Edges</Label>
               <div className="flex items-center gap-2">
                 <Switch
-                  checked={settings.stroke}
+                  checked={settings.taperEdges}
                   onCheckedChange={(checked) =>
-                    updateSetting("stroke", checked)
+                    updateSetting("taperEdges", checked)
                   }
                   className="data-[state=unchecked]:bg-[#1a1a1a]"
                 />
@@ -226,9 +226,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">X</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.x}
                   onChange={(e) => updateSetting("x", Number(e.target.value))}
@@ -245,9 +245,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Y</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.y}
                   onChange={(e) => updateSetting("y", Number(e.target.value))}
@@ -264,9 +264,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Rotation</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.rotation}
                   onChange={(e) =>
@@ -285,9 +285,9 @@ export function WaveSpectrumControlsPanel({
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2">
+            <div className="grid grid-cols-3 items-center">
               <label className="text-zinc-400 text-xs">Opacity</label>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 col-span-2">
                 <Input
                   value={settings.opacity}
                   onChange={(e) =>
