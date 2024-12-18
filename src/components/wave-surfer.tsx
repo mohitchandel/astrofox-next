@@ -1,22 +1,22 @@
 "use client";
 
+import { useAudioElement } from "@/context/AudioContext";
 import * as React from "react";
 import WaveSurfer from "wavesurfer.js";
 
-const WaveSurferVisualizer: React.FC<{
-  audioElement: HTMLAudioElement | null;
-}> = ({ audioElement }) => {
+const WaveSurferVisualizer: React.FC<{}> = () => {
   const waveformRef = React.useRef<HTMLDivElement | null>(null);
   const waveSurferRef = React.useRef<WaveSurfer | null>(null);
+  const { audioElement } = useAudioElement();
 
   React.useEffect(() => {
     if (waveformRef.current) {
       waveSurferRef.current = WaveSurfer.create({
         container: waveformRef.current,
-        waveColor: "#ddd",
-        progressColor: "#f76565",
+        waveColor: "#2c2c2c",
+        progressColor: "#6a49cc",
         height: 100,
-        barWidth: 2,
+        barWidth: 4,
       });
     }
 

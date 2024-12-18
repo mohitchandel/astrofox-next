@@ -13,15 +13,15 @@ interface BarControlsPanelProps {
 export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
   const [settings, setSettings] = useState<BarSpectrumSettings>({
     maxDb: -20,
-    minFrequency: 20,
+    minFrequency: -60,
     maxFrequency: 20000,
     smoothing: 0.8,
     width: 800,
     height: 200,
-    shadowHeight: 50,
-    barWidth: 15,
+    shadowHeight: 10,
+    barWidth: "5",
     isBarWidthAuto: true,
-    barSpacing: 5,
+    barSpacing: "2",
     isBarSpacingAuto: true,
     barColor: "#00ff00",
     shadowColor: "#003300",
@@ -43,25 +43,24 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
   };
 
   return (
-    <div className="border-t bg-[#1E1E1E] p-4">
+    <div className="bg-[#2c2c2c] p-4 mt-2">
       <div className="space-y-6">
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-center gap-4 mb-4">
             <h3 className="text-xs font-medium">Bar Spectrum</h3>
             <span className="text-xs text-zinc-400">Bar Spectrum 1</span>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <Label className="text-sm text-zinc-400">MaxDB</Label>
+          <div className="space-y-4 text-xs">
+            <div className="flex justify-between items-center ">
+              <label className="text-zinc-400 text-xs">MaxDB</label>
               <div className="flex items-center gap-2 mt-1">
                 <Input
-                  type="number"
                   value={settings.maxDb}
                   onChange={(e) =>
                     updateSetting("maxDb", Number(e.target.value))
                   }
-                  className="w-16 bg-zinc-900"
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Slider
                   value={[settings.maxDb]}
@@ -69,112 +68,217 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
                   max={0}
                   step={1}
                   onValueChange={([value]) => updateSetting("maxDb", value)}
-                  className="flex-1"
+                  className="flex-1 w-1/2 bg-primary h-1"
                 />
               </div>
             </div>
 
-            <div>
-              <Label className="text-sm text-zinc-400">Smoothing</Label>
+            <div className="flex justify-between items-center ">
+              <label className="text-zinc-400 text-xs">Min Frequency</label>
               <div className="flex items-center gap-2 mt-1">
                 <Input
-                  type="number"
+                  value={settings.minFrequency}
+                  onChange={(e) =>
+                    updateSetting("minFrequency", Number(e.target.value))
+                  }
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                />
+                <Slider
+                  value={[settings.minFrequency]}
+                  min={0}
+                  max={4630}
+                  step={1}
+                  onValueChange={([value]) =>
+                    updateSetting("minFrequency", value)
+                  }
+                  className="flex-1 w-1/2 bg-primary h-1"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center ">
+              <label className="text-zinc-400 text-xs">Max Frequency</label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  value={settings.maxFrequency}
+                  onChange={(e) =>
+                    updateSetting("maxFrequency", Number(e.target.value))
+                  }
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                />
+                <Slider
+                  value={[settings.maxFrequency]}
+                  min={0}
+                  max={22000}
+                  step={1}
+                  onValueChange={([value]) =>
+                    updateSetting("maxFrequency", value)
+                  }
+                  className="flex-1 w-1/2 bg-primary h-1"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">Smoothing</label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
                   value={settings.smoothing}
                   onChange={(e) =>
                     updateSetting("smoothing", Number(e.target.value))
                   }
-                  className="w-16 bg-zinc-900"
                   step="0.1"
                   min="0"
                   max="1"
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Slider
-                  value={[settings.smoothing * 100]}
+                  value={[settings.smoothing]}
                   min={0}
-                  max={100}
-                  step={1}
-                  onValueChange={([value]) =>
-                    updateSetting("smoothing", value / 100)
-                  }
-                  className="flex-1"
+                  max={1}
+                  step={0.1}
+                  onValueChange={([value]) => updateSetting("smoothing", value)}
+                  className="flex-1 w-1/2 bg-primary h-1"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">Bar Width</Label>
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">Height</label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  value={settings.height}
+                  onChange={(e) =>
+                    updateSetting("height", Number(e.target.value))
+                  }
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                />
+                <Slider
+                  value={[settings.height]}
+                  min={0}
+                  max={480}
+                  step={1}
+                  onValueChange={([value]) => updateSetting("height", value)}
+                  className="flex-1 w-1/2 bg-primary h-1"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">Width</label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  value={settings.width}
+                  onChange={(e) =>
+                    updateSetting("width", Number(e.target.value))
+                  }
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                />
+                <Slider
+                  value={[settings.width]}
+                  min={0}
+                  max={480}
+                  step={1}
+                  onValueChange={([value]) => updateSetting("width", value)}
+                  className="flex-1 w-1/2 bg-primary h-1"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">Shadow Height</label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  value={settings.shadowHeight}
+                  onChange={(e) =>
+                    updateSetting("shadowHeight", Number(e.target.value))
+                  }
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                />
+                <Slider
+                  value={[settings.shadowHeight]}
+                  min={0}
+                  max={480}
+                  step={1}
+                  onValueChange={([value]) =>
+                    updateSetting("shadowHeight", value)
+                  }
+                  className="flex-1 w-1/2 bg-primary h-1"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center gap-2">
+              <Label className="text-zinc-400 text-xs">Bar Width</Label>
               <div className="flex items-center gap-2">
                 <Input
-                  type="number"
                   value={settings.barWidth}
-                  onChange={(e) =>
-                    updateSetting("barWidth", Number(e.target.value))
-                  }
-                  className="w-16 bg-zinc-900"
+                  onChange={(e) => updateSetting("barWidth", e.target.value)}
                   disabled={settings.isBarWidthAuto}
                   min="1"
+                  className="mt-1 h-6 w-16 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Switch
                   checked={settings.isBarWidthAuto}
                   onCheckedChange={(checked) =>
                     updateSetting("isBarWidthAuto", checked)
                   }
+                  className="data-[state=unchecked]:bg-[#1a1a1a]"
                 />
-                <span className="text-sm text-zinc-400">Auto</span>
+                <span className="text-zinc-400">Auto</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">Bar Spacing</Label>
+            <div className="flex justify-between items-center gap-2">
+              <Label className="text-zinc-400 text-xs">Bar Spacing</Label>
               <div className="flex items-center gap-2">
                 <Input
-                  type="number"
                   value={settings.barSpacing}
-                  onChange={(e) =>
-                    updateSetting("barSpacing", Number(e.target.value))
-                  }
-                  className="w-16 bg-zinc-900"
+                  onChange={(e) => updateSetting("barSpacing", e.target.value)}
                   disabled={settings.isBarSpacingAuto}
                   min="0"
+                  className="mt-1 h-6 w-16 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Switch
                   checked={settings.isBarSpacingAuto}
                   onCheckedChange={(checked) =>
                     updateSetting("isBarSpacingAuto", checked)
                   }
+                  className="data-[state=unchecked]:bg-[#1a1a1a]"
                 />
-                <span className="text-sm text-zinc-400">Auto</span>
+                <span className="text-zinc-400">Auto</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <label className="text-zinc-400 text-xs">Bar Color</label>
+              <div className="flex items-center gap-2 mt-1 rounded-full">
+                <Input
+                  type="color"
+                  value={settings.barColor}
+                  onChange={(e) => updateSetting("barColor", e.target.value)}
+                  className="w-8 h-8 p-1 rounded-full"
+                />
               </div>
             </div>
 
             <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">Bar Color</Label>
-              <Input
-                type="color"
-                value={settings.barColor}
-                onChange={(e) => updateSetting("barColor", e.target.value)}
-                className="w-16 h-8 bg-zinc-900"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <Label className="text-sm text-zinc-400">Shadow Color</Label>
+              <Label className="text-zinc-400 text-xs">Shadow Color</Label>
               <Input
                 type="color"
                 value={settings.shadowColor}
                 onChange={(e) => updateSetting("shadowColor", e.target.value)}
-                className="w-16 h-8 bg-zinc-900"
+                className="w-8 h-8 p-1 rounded-full"
               />
             </div>
 
-            <div>
-              <Label className="text-sm text-zinc-400">Position X</Label>
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">X</label>
               <div className="flex items-center gap-2 mt-1">
                 <Input
-                  type="number"
                   value={settings.x}
                   onChange={(e) => updateSetting("x", Number(e.target.value))}
-                  className="w-16 bg-zinc-900"
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Slider
                   value={[settings.x]}
@@ -182,19 +286,18 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
                   max={400}
                   step={1}
                   onValueChange={([value]) => updateSetting("x", value)}
-                  className="flex-1"
+                  className="flex-1 w-1/2 bg-primary h-1"
                 />
               </div>
             </div>
 
-            <div>
-              <Label className="text-sm text-zinc-400">Position Y</Label>
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">Y</label>
               <div className="flex items-center gap-2 mt-1">
                 <Input
-                  type="number"
                   value={settings.y}
                   onChange={(e) => updateSetting("y", Number(e.target.value))}
-                  className="w-16 bg-zinc-900"
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Slider
                   value={[settings.y]}
@@ -202,47 +305,41 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
                   max={400}
                   step={1}
                   onValueChange={([value]) => updateSetting("y", value)}
-                  className="flex-1"
+                  className="flex-1 w-1/2 bg-primary h-1"
                 />
               </div>
             </div>
 
-            <div>
-              <Label className="text-sm text-zinc-400">
-                Rotation (degrees)
-              </Label>
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">Rotation</label>
               <div className="flex items-center gap-2 mt-1">
                 <Input
-                  type="number"
                   value={settings.rotation}
                   onChange={(e) =>
                     updateSetting("rotation", Number(e.target.value))
                   }
-                  className="w-16 bg-zinc-900"
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Slider
                   value={[settings.rotation]}
-                  min={-180}
-                  max={180}
+                  min={-400}
+                  max={400}
                   step={1}
                   onValueChange={([value]) => updateSetting("rotation", value)}
-                  className="flex-1"
+                  className="flex-1 w-1/2 bg-primary h-1"
                 />
               </div>
             </div>
 
-            <div>
-              <Label className="text-sm text-zinc-400">Opacity (%)</Label>
+            <div className="flex justify-between items-center gap-2">
+              <label className="text-zinc-400 text-xs">Opacity</label>
               <div className="flex items-center gap-2 mt-1">
                 <Input
-                  type="number"
                   value={settings.opacity}
                   onChange={(e) =>
                     updateSetting("opacity", Number(e.target.value))
                   }
-                  className="w-16 bg-zinc-900"
-                  min="0"
-                  max="100"
+                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
                 />
                 <Slider
                   value={[settings.opacity]}
@@ -250,7 +347,7 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
                   max={100}
                   step={1}
                   onValueChange={([value]) => updateSetting("opacity", value)}
-                  className="flex-1"
+                  className="flex-1 w-1/2 bg-primary h-1"
                 />
               </div>
             </div>

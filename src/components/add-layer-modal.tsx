@@ -22,7 +22,8 @@ interface AddLayerModalProps {
 }
 
 export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
-  const { setOpenBarSpectrum, setOpenWave, setOpenImage } = useStateContext();
+  const { setOpenBarSpectrum, setOpenWave, setOpenImage, setOpenText } =
+    useStateContext();
 
   const displayLayers = [
     {
@@ -45,7 +46,12 @@ export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
       type: "sound-wave",
       onclick: () => setOpenWave(true),
     },
-    { icon: Type, label: "Text", type: "text" },
+    {
+      icon: Type,
+      label: "Text",
+      type: "text",
+      onclick: () => setOpenText(true),
+    },
     { icon: Waves, label: "Wave Spectrum", type: "wave-spectrum" },
   ];
 
@@ -79,7 +85,7 @@ export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
               {displayLayers.map((layer) => (
                 <button
                   key={layer.type}
-                  className="flex flex-col items-center justify-center gap-3 h-32 bg-zinc-950 hover:border-purple-500 hover:bg-zinc-950 rounded-lg"
+                  className="flex flex-col items-center justify-center gap-3 h-32 bg-zinc-950 border-2 border-zinc-950 hover:border-purple-500 hover:bg-zinc-950 rounded-lg"
                   onClick={() => {
                     if (layer.onclick) {
                       layer.onclick();

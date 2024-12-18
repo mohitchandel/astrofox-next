@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Pause, Play, Volume2, RotateCcw } from "lucide-react";
 import { useAudioControls } from "@/hooks/useAudioControls";
+import { useAudioElement } from "@/context/AudioContext";
 
 interface TimelineProps {
-  audioElement: HTMLAudioElement | null;
   dimensions: {
     width: number;
     height: number;
@@ -13,11 +13,9 @@ interface TimelineProps {
   onDimensionsChange: (dimensions: { width: number; height: number }) => void;
 }
 
-export function Timeline({
-  audioElement,
-  dimensions,
-  onDimensionsChange,
-}: TimelineProps) {
+export function Timeline({ dimensions, onDimensionsChange }: TimelineProps) {
+  const { audioElement } = useAudioElement();
+
   const {
     isPlaying,
     currentTime,
@@ -47,9 +45,9 @@ export function Timeline({
   };
 
   const adjustDimensions = (zoom: number) => {
-    const baseWidth = 1280; // Default width for 100% zoom
-    const baseHeight = 720; // Default height for 100% zoom
-    const width = Math.max((baseWidth * zoom) / 100, 320); // Ensure minimum dimensions
+    const baseWidth = 1280;
+    const baseHeight = 720;
+    const width = Math.max((baseWidth * zoom) / 100, 320);
     const height = Math.max((baseHeight * zoom) / 100, 240);
     onDimensionsChange({ width, height });
   };
@@ -76,7 +74,7 @@ export function Timeline({
               value={[volume]}
               max={100}
               step={1}
-              className="w-24"
+              className="w-24 bg-primary"
               onValueChange={([value]) => setVolumeLevel(value)}
             />
           </div>
@@ -86,6 +84,7 @@ export function Timeline({
               max={duration || 100}
               step={0.1}
               onValueChange={([value]) => seekTo(value)}
+              className="bg-primary"
             />
           </div>
           <div className="text-sm text-zinc-400">
@@ -101,7 +100,7 @@ export function Timeline({
           </Button>
         </div>
       </div>
-      <div className="h-8 bg-[#7E57C2] flex items-center justify-between px-4">
+      <div className="h-8 bg-[#6a49cc] flex items-center justify-between px-4">
         <div className="flex-1 flex items-center justify-center gap-3">
           <span className="text-white text-sm">{`${Math.round(
             dimensions.width
@@ -116,7 +115,7 @@ export function Timeline({
             value={[zoomLevel]}
             max={100}
             step={1}
-            className="w-32"
+            className="w-32 h-0.5 bg-white"
             onValueChange={([value]) => handleSliderChange(value)}
           />
           <button

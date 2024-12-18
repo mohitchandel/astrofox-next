@@ -1,17 +1,17 @@
 import { Input } from "@/components/ui/input";
+import { useAudioElement } from "@/context/AudioContext";
 import { useState, useEffect, useRef, JSX } from "react";
 
 interface AudioControlsPanelProps {
   onAudioElementCreated: (audioElement: HTMLAudioElement) => void;
 }
 
-export function AudioControlsPanel({
-  onAudioElementCreated,
-}: AudioControlsPanelProps): JSX.Element {
+export function AudioControlsPanel(): JSX.Element {
   const [audioSrc, setAudioSrc] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { audioElement, createAudioElement } = useAudioElement();
 
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -23,14 +23,12 @@ export function AudioControlsPanel({
   };
 
   useEffect(() => {
-    if (audioSrc) {
-      const audio = document.getElementById("audioPlayer") as HTMLAudioElement;
-      audioRef.current = audio;
-      onAudioElementCreated(audio);
+    if (audioSrc && !audioElement) {
+      // Create a new audio element only if it's not created yet
+      createAudioElement(audioSrc);
     }
-  }, [audioSrc, onAudioElementCreated]);
+  }, [audioSrc, audioElement, createAudioElement]); // Only run when audioSrc or audioElement changes
 
-  // Cleanup URL on unmount
   useEffect(() => {
     return () => {
       if (audioSrc) {
@@ -40,11 +38,11 @@ export function AudioControlsPanel({
   }, [audioSrc]);
 
   const togglePlay = () => {
-    if (audioRef.current) {
+    if (audioElement) {
       if (isPlaying) {
-        audioRef.current.pause();
+        audioElement.pause();
       } else {
-        audioRef.current.play().catch((error) => {
+        audioElement.play().catch((error) => {
           console.error("Error playing audio:", error);
         });
       }
@@ -78,6 +76,7 @@ export function AudioControlsPanel({
             {audioSrc && (
               <div className="space-y-2">
                 <audio
+                  ref={audioRef}
                   id="audioPlayer"
                   src={audioSrc}
                   className="w-full"

@@ -13,7 +13,8 @@ import { WaveSettings } from "@/types/wave-settings";
 import { AudioControlsPanel } from "@/components/control-panel/audio-controls-panel";
 import { LayersPanel } from "@/components/control-panel/layer-panel";
 import AudioVisualizer from "@/components/visualizer/audio-visualizer";
-import SoundWaveVisualizer from "@/components/visualizer/sound-wave-visualizer";
+import WaveVisualizer from "@/components/visualizer/sound-wave-visualizer";
+import { useStateContext } from "@/context/StateContext";
 
 interface TextStyle {
   text: string;
@@ -29,16 +30,14 @@ interface TextStyle {
 }
 
 export default function Home(): JSX.Element {
-  const [audioElement, setAudioElement] =
-    React.useState<HTMLAudioElement | null>(null);
-  const [audioUrl, setAudioUrl] = React.useState<string>("/path-to-audio.mp3");
   const [sceneDimensions, setSceneDimensions] = React.useState({
     width: 854,
     height: 480,
   });
+  const { openText, openBarSpectrum, openWave } = useStateContext();
 
   const [textStyle, setTextStyle] = React.useState<TextStyle>({
-    text: "hello",
+    text: "",
     size: 40,
     font: "roboto",
     isItalic: false,
@@ -53,15 +52,15 @@ export default function Home(): JSX.Element {
   const [barSpectrumSettings, setBarSpectrumSettings] =
     React.useState<BarSpectrumSettings>({
       maxDb: -20,
-      minFrequency: 20,
+      minFrequency: -60,
       maxFrequency: 20000,
       smoothing: 0.8,
       width: 800,
       height: 200,
-      shadowHeight: 50,
-      barWidth: 15,
+      shadowHeight: 10,
+      barWidth: "5",
       isBarWidthAuto: true,
-      barSpacing: 5,
+      barSpacing: "2",
       isBarSpacingAuto: true,
       barColor: "#00ff00",
       shadowColor: "#003300",
@@ -85,19 +84,12 @@ export default function Home(): JSX.Element {
     x: 0,
     y: 0,
     rotation: 0,
+    opacity: 100,
   });
 
   const handleTextChange = React.useCallback((newTextStyle: TextStyle) => {
     setTextStyle(newTextStyle);
   }, []);
-
-  const handleAudioElementCreated = React.useCallback(
-    (element: HTMLAudioElement) => {
-      setAudioElement(element);
-      setAudioUrl(element.src || "/path-to-audio.mp3");
-    },
-    []
-  );
 
   const handleDimensionsChange = (newDimensions: {
     width: number;
@@ -107,57 +99,57 @@ export default function Home(): JSX.Element {
   };
 
   return (
-    <div className="h-screen bg-zinc-700 text-zinc-100 flex flex-col overflow-hidden shadow-lg">
+    <div className="h-screen bg-[#202020] text-zinc-100 flex flex-col overflow-hidden shadow-lg">
       <div className="flex flex-1 min-h-0 justify-between">
+        {/* Scene start*/}
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex-1 p-4 flex items-center justify-center">
             <div
-              className="bg-black relative flex items-center justify-center"
+              className="bg-black relative flex items-center justify-center shadow-lg shadow-black"
               style={{
                 width: `${sceneDimensions.width}px`,
                 height: `${sceneDimensions.height}px`,
               }}
             >
-              <div
-                style={{
-                  fontFamily: textStyle.font,
-                  fontSize: `${textStyle.size}px`,
-                  fontStyle: textStyle.isItalic ? "italic" : "normal",
-                  fontWeight: textStyle.isBold ? "bold" : "normal",
-                  transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
-                  color: textStyle.color,
-                  opacity: textStyle.opacity / 100,
-                }}
-              >
-                {textStyle.text}
-              </div>
+              {openText && (
+                <div
+                  style={{
+                    fontFamily: textStyle.font,
+                    fontSize: `${textStyle.size}px`,
+                    fontStyle: textStyle.isItalic ? "italic" : "normal",
+                    fontWeight: textStyle.isBold ? "bold" : "normal",
+                    transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
+                    color: textStyle.color,
+                    opacity: textStyle.opacity / 100,
+                  }}
+                >
+                  {textStyle.text}
+                </div>
+              )}
+              {openBarSpectrum && (
+                <AudioVisualizer
+                  barCount={64}
+                  barSpectrumSettings={barSpectrumSettings}
+                />
+              )}
 
-              <AudioVisualizer
-                audioElement={audioElement}
-                settings={barSpectrumSettings}
-              />
-
-              <SoundWaveVisualizer
-                audioElement={audioElement}
-                settings={waveSettings}
-              />
+              {openWave && <WaveVisualizer waveSettings={waveSettings} />}
             </div>
           </div>
           <div className="flex flex-col p-4 w-1/2 bg-transparent mx-auto">
-            {audioUrl && <WaveSurferVisualizer audioElement={audioElement} />}
+            <WaveSurferVisualizer />
           </div>
         </div>
-        {/* Scene end*/}
 
-        <div className="w-80 bg-zinc-900 border-l border-zinc-800 flex flex-col">
+        <div className="w-80 bg-[#2c2c2c] shadow-2xl flex flex-col">
           <div className="flex-none">
             <LayersPanel />
           </div>
-          <div className="flex-1 overflow-y-auto">
+
+          <div className="flex-1 overflow-y-auto bg-[#1e1e1e]">
+            <div className="text-xs py-4 px-4">CONTROLS</div>
             <TextControlsPanel onTextChange={handleTextChange} />
-            <AudioControlsPanel
-              onAudioElementCreated={handleAudioElementCreated}
-            />
+            <AudioControlsPanel />
             <BarControlsPanel onSettingsChange={setBarSpectrumSettings} />
             <WaveControlsPanel onSettingsChange={setWaveSettings} />
             <ImageControlsPanel />
@@ -166,7 +158,6 @@ export default function Home(): JSX.Element {
       </div>
 
       <Timeline
-        audioElement={audioElement}
         dimensions={sceneDimensions}
         onDimensionsChange={handleDimensionsChange}
       />

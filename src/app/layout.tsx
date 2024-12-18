@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { StateProvider } from "@/context/StateContext";
+import { AudioElementProvider } from "@/context/AudioContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StateProvider>{children}</StateProvider>
+        <StateProvider>
+          <AudioElementProvider>{children}</AudioElementProvider>
+        </StateProvider>
       </body>
     </html>
   );

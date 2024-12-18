@@ -12,4 +12,5 @@ export interface WaveSettings {
   x: number;
   y: number;
   rotation: number;
+  opacity: number;
 }

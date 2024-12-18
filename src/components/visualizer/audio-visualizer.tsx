@@ -1,197 +1,139 @@
-import React, { useEffect, useRef } from "react";
+import { useAudioElement } from "@/context/AudioContext";
 import { BarSpectrumSettings } from "@/types/bar-spectrum";
-import { useStateContext } from "@/context/StateContext";
+import React, { useEffect, useRef } from "react";
 
-interface AudioVisualizerProps {
-  audioElement: HTMLAudioElement | null;
-  settings: BarSpectrumSettings;
+declare global {
+  interface Window {
+    webkitAudioContext: typeof AudioContext;
+  }
 }
 
-const AudioVisualizer = ({ audioElement, settings }: AudioVisualizerProps) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationFrameRef = useRef<number>(0);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-  const settingsRef = useRef<BarSpectrumSettings>(settings);
+interface AudioVisualizerProps {
+  barCount?: number;
+  barSpectrumSettings: BarSpectrumSettings;
+}
 
-  const { openBarSpectrum } = useStateContext();
+const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
+  barCount = 64,
+  barSpectrumSettings,
+}) => {
+  const { audioElement } = useAudioElement();
 
-  useEffect(() => {
-    settingsRef.current = settings;
-    if (canvasRef.current) {
-      canvasRef.current.width = settings.width;
-      canvasRef.current.height = settings.height + settings.shadowHeight;
-    }
-  }, [settings]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const barsRef = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     if (!audioElement) return;
 
-    const setupAudioContext = async () => {
-      if (audioContextRef.current) {
-        if (sourceRef.current) {
-          sourceRef.current.disconnect();
-        }
-        await audioContextRef.current.close();
-      }
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
 
-      const audioContext = new AudioContext();
-      const analyser = audioContext.createAnalyser();
-      const source = audioContext.createMediaElementSource(audioElement);
+    const { maxDb, minFrequency, smoothing } = barSpectrumSettings;
 
-      source.connect(analyser);
-      analyser.connect(audioContext.destination);
+    const validatedMaxDb = Math.max(maxDb, -10);
+    const validatedMinDb = Math.min(minFrequency, validatedMaxDb - 1);
 
-      analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = settings.smoothing;
+    analyser.maxDecibels = validatedMaxDb;
+    analyser.minDecibels = validatedMinDb;
+    analyser.smoothingTimeConstant = smoothing;
 
-      audioContextRef.current = audioContext;
-      analyserRef.current = analyser;
-      sourceRef.current = source;
-
-      if (!audioElement.paused) {
-        draw();
-      }
-    };
-
-    setupAudioContext();
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (sourceRef.current) {
-        sourceRef.current.disconnect();
-      }
-      if (audioContextRef.current?.state !== "closed") {
-        audioContextRef.current?.close();
-      }
-    };
-  }, [audioElement]);
-
-  useEffect(() => {
-    if (!audioElement) return;
-
-    const handlePlay = () => draw();
-    const handlePause = () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-
-    audioElement.addEventListener("play", handlePlay);
-    audioElement.addEventListener("pause", handlePause);
-
-    return () => {
-      audioElement.removeEventListener("play", handlePlay);
-      audioElement.removeEventListener("pause", handlePause);
-    };
-  }, [audioElement]);
-
-  const draw = () => {
-    const canvas = canvasRef.current;
-    if (!canvas || !analyserRef.current) return;
-
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
-
-    const analyser = analyserRef.current;
+    analyser.fftSize = 256;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    const renderFrame = () => {
-      const {
-        width,
-        height,
-        shadowHeight,
-        barColor,
-        shadowColor,
-        isBarWidthAuto,
-        barWidth,
-        isBarSpacingAuto,
-        barSpacing,
-        x,
-        y,
-        rotation,
-        opacity,
-      } = settingsRef.current;
+    let source: MediaElementAudioSourceNode | null = null;
 
-      analyser.getByteFrequencyData(dataArray);
-
-      // Clear with transparency
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const calculatedBarWidth = isBarWidthAuto
-        ? (width / bufferLength) * 2.5
-        : barWidth;
-
-      const calculatedBarSpacing = isBarSpacingAuto
-        ? calculatedBarWidth * 0.3
-        : barSpacing;
-
-      ctx.save();
-      ctx.translate(width / 2 + x, height / 2 + y);
-      ctx.rotate((rotation * Math.PI) / 180);
-      ctx.translate(-width / 2, -height / 2);
-
-      // Set composite operation for better blending
-      ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha = opacity / 100;
-
-      for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * height;
-        const barX = i * (calculatedBarWidth + calculatedBarSpacing);
-
-        const gradient = ctx.createLinearGradient(
-          0,
-          height,
-          0,
-          height + shadowHeight
-        );
-        const shadowColorWithAlpha = shadowColor
-          .replace(")", ", 0.5)")
-          .replace("rgb", "rgba");
-        gradient.addColorStop(0, shadowColorWithAlpha);
-        gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(barX, height, calculatedBarWidth, shadowHeight);
-
-        // Draw bar with semi-transparency
-        const barColorWithAlpha = barColor
-          .replace(")", ", 0.8)")
-          .replace("rgb", "rgba");
-        ctx.fillStyle = barColorWithAlpha;
-        ctx.fillRect(barX, height - barHeight, calculatedBarWidth, barHeight);
+    const initAudio = () => {
+      if (!source) {
+        source = audioContext.createMediaElementSource(audioElement);
+        source.connect(analyser);
+        analyser.connect(audioContext.destination);
       }
-
-      ctx.restore();
-
-      animationFrameRef.current = requestAnimationFrame(renderFrame);
+      audioContext.resume();
+      visualize();
     };
 
-    renderFrame();
-  };
+    const visualize = () => {
+      analyser.getByteFrequencyData(dataArray);
 
-  if (!openBarSpectrum) {
-    return null;
-  }
+      requestAnimationFrame(visualize);
+
+      barsRef.current.forEach((bar, index) => {
+        const value = dataArray[index];
+        const normalizedValue = Math.max(value / 2, 10);
+        bar.style.height = `${normalizedValue}px`;
+        bar.style.boxShadow = `0px ${barSpectrumSettings.shadowHeight}px ${barSpectrumSettings.shadowColor}`;
+      });
+    };
+
+    audioElement.addEventListener("play", initAudio);
+
+    return () => {
+      audioElement.removeEventListener("play", initAudio);
+    };
+  }, [barCount, barSpectrumSettings]);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      barsRef.current = [];
+      containerRef.current.innerHTML = "";
+
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement("div");
+
+        bar.style.width = barSpectrumSettings.isBarWidthAuto
+          ? `${100 / barCount}%`
+          : `${barSpectrumSettings.barWidth}px`;
+
+        bar.style.height = "10px";
+        bar.style.backgroundColor = barSpectrumSettings.barColor;
+        bar.style.margin = barSpectrumSettings.isBarSpacingAuto
+          ? `0 ${2 / barCount}%`
+          : `0 ${barSpectrumSettings.barSpacing}px`;
+        bar.style.transition = "height 0.1s ease-out";
+        bar.style.flex = "1";
+        bar.style.alignSelf = "flex-end";
+        bar.style.opacity = `${barSpectrumSettings.opacity / 100}`;
+
+        containerRef.current.appendChild(bar);
+        barsRef.current.push(bar);
+      }
+    }
+
+    return () => {
+      console.log("Cleaning up bars...");
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+        barsRef.current = [];
+      }
+    };
+  }, [barCount, barSpectrumSettings]);
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      className="flex flex-col items-center"
       style={{
-        position: "absolute",
-        width: `${settings.width}px`,
-        height: `${settings.height + settings.shadowHeight}px`,
-        transform: "translate(-50%, -50%)",
-        top: "50%",
-        left: "50%",
-        pointerEvents: "none",
-        mixBlendMode: "screen",
-        zIndex: 1,
+        transform: `translate(${barSpectrumSettings.x}px, ${barSpectrumSettings.y}px) rotate(${barSpectrumSettings.rotation}deg)`,
+        width: barSpectrumSettings.width,
+        height: barSpectrumSettings.height,
+        position: "relative",
+        opacity: `${barSpectrumSettings.opacity / 100}`,
       }}
-    />
+    >
+      <div
+        ref={containerRef}
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          gap: "2px",
+          width: "100%",
+          height: "100%",
+          backgroundColor: "transparent",
+        }}
+      ></div>
+    </div>
   );
 };
 
