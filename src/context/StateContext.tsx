@@ -13,6 +13,9 @@ interface StateContextProps {
 
   openText: boolean;
   setOpenText: (val: boolean) => void;
+
+  openWaveSpectrum: boolean;
+  setOpenWaveSpectrum: (val: boolean) => void;
 }
 
 const StateContext = createContext<StateContextProps | undefined>(undefined);
@@ -23,6 +26,7 @@ export const StateProvider = ({ children }: { children: ReactNode }) => {
   const [openWave, setOpenWave] = useState<boolean>(false);
   const [openImage, setOpenImage] = useState<boolean>(false);
   const [openText, setOpenText] = useState<boolean>(false);
+  const [openWaveSpectrum, setOpenWaveSpectrum] = useState<boolean>(false);
 
   return (
     <StateContext.Provider
@@ -35,6 +39,8 @@ export const StateProvider = ({ children }: { children: ReactNode }) => {
         setOpenImage,
         openText,
         setOpenText,
+        openWaveSpectrum,
+        setOpenWaveSpectrum,
       }}
     >
       {children}

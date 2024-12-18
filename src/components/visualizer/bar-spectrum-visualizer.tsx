@@ -13,51 +13,38 @@ interface AudioVisualizerProps {
   barSpectrumSettings: BarSpectrumSettings;
 }
 
-const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
+const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
   barCount = 64,
   barSpectrumSettings,
 }) => {
-  const { audioElement } = useAudioElement();
-
+  const { audioElement, getAnalyser } = useAudioElement();
   const containerRef = useRef<HTMLDivElement>(null);
   const barsRef = useRef<HTMLDivElement[]>([]);
+  const animationFrameRef = useRef<number>(NaN);
+  const analyserRef = useRef<AnalyserNode | null>(null);
 
   useEffect(() => {
     if (!audioElement) return;
 
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-    const analyser = audioContext.createAnalyser();
-
     const { maxDb, minFrequency, smoothing } = barSpectrumSettings;
 
-    const validatedMaxDb = Math.max(maxDb, -10);
-    const validatedMinDb = Math.min(minFrequency, validatedMaxDb - 1);
+    // Get or create analyser
+    analyserRef.current = getAnalyser("bar-spectrum", {
+      fftSize: 256,
+      smoothingTimeConstant: smoothing,
+      maxDecibels: Math.max(maxDb, -10),
+      minDecibels: Math.min(minFrequency, Math.max(maxDb, -10) - 1),
+    });
 
-    analyser.maxDecibels = validatedMaxDb;
-    analyser.minDecibels = validatedMinDb;
-    analyser.smoothingTimeConstant = smoothing;
+    if (!analyserRef.current) return;
 
-    analyser.fftSize = 256;
+    const analyser = analyserRef.current;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    let source: MediaElementAudioSourceNode | null = null;
-
-    const initAudio = () => {
-      if (!source) {
-        source = audioContext.createMediaElementSource(audioElement);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
-      }
-      audioContext.resume();
-      visualize();
-    };
-
     const visualize = () => {
       analyser.getByteFrequencyData(dataArray);
-
-      requestAnimationFrame(visualize);
+      animationFrameRef.current = requestAnimationFrame(visualize);
 
       barsRef.current.forEach((bar, index) => {
         const value = dataArray[index];
@@ -67,12 +54,23 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
       });
     };
 
-    audioElement.addEventListener("play", initAudio);
+    const startVisualization = () => {
+      visualize();
+    };
+
+    if (!audioElement.paused) {
+      startVisualization();
+    }
+
+    audioElement.addEventListener("play", startVisualization);
 
     return () => {
-      audioElement.removeEventListener("play", initAudio);
+      audioElement.removeEventListener("play", startVisualization);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
-  }, [barCount, barSpectrumSettings]);
+  }, [audioElement, barSpectrumSettings, getAnalyser]);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -137,4 +135,4 @@ const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
   );
 };
 
-export default AudioVisualizer;
+export default BarSpectrumVisualizer;

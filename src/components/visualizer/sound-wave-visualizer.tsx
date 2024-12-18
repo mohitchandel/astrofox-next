@@ -1,6 +1,6 @@
 import { useAudioElement } from "@/context/AudioContext";
 import { WaveSettings } from "@/types/wave-settings";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 interface WaveVisualizerProps {
   pointCount?: number;
@@ -13,35 +13,23 @@ const WaveVisualizer: React.FC<WaveVisualizerProps> = ({
 }) => {
   const wavePathRef = useRef<SVGPathElement>(null);
   const fillPathRef = useRef<SVGPathElement>(null);
-  const [audioContext] = useState(
-    () => new (window.AudioContext || window.webkitAudioContext)()
-  );
-  const [analyser] = useState(() => audioContext.createAnalyser());
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const isInitializedRef = useRef(false);
+  const analyserRef = useRef<AnalyserNode | null>(null);
 
-  const { audioElement } = useAudioElement();
+  const { audioElement, getAnalyser } = useAudioElement();
 
-  const initAudio = () => {
-    if (!sourceRef.current && audioElement) {
-      sourceRef.current = audioContext.createMediaElementSource(audioElement);
-      sourceRef.current.connect(analyser);
-      analyser.connect(audioContext.destination);
-    }
-    audioContext.resume();
-    if (!isInitializedRef.current) {
-      isInitializedRef.current = true;
-    }
-    startVisualization();
-  };
+  useEffect(() => {
+    if (!audioElement) return;
 
-  const startVisualization = () => {
-    // Cancel any existing animation frame
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
+    // Get or create analyser
+    analyserRef.current = getAnalyser("wave-visualizer", {
+      fftSize: pointCount * 2,
+      smoothingTimeConstant: waveSettings.smoothing,
+    });
 
+    if (!analyserRef.current) return;
+
+    const analyser = analyserRef.current;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
@@ -100,41 +88,23 @@ const WaveVisualizer: React.FC<WaveVisualizerProps> = ({
       }
     };
 
-    visualize();
-  };
+    const startVisualization = () => {
+      visualize();
+    };
 
-  useEffect(() => {
-    if (!audioElement) return;
-
-    // Update analyser settings when they change
-    analyser.smoothingTimeConstant = waveSettings.smoothing;
-    analyser.fftSize = pointCount * 2;
-
-    // If already initialized, restart visualization with new settings
-    if (isInitializedRef.current && !audioElement.paused) {
+    if (!audioElement.paused) {
       startVisualization();
     }
 
-    audioElement.addEventListener("play", initAudio);
+    audioElement.addEventListener("play", startVisualization);
 
     return () => {
-      audioElement.removeEventListener("play", initAudio);
+      audioElement.removeEventListener("play", startVisualization);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [audioElement, pointCount, waveSettings, audioContext, analyser]);
-
-  // Cleanup effect when component unmounts
-  useEffect(() => {
-    return () => {
-      if (sourceRef.current) {
-        sourceRef.current.disconnect();
-      }
-      analyser.disconnect();
-      isInitializedRef.current = false;
-    };
-  }, [analyser]);
+  }, [audioElement, pointCount, waveSettings, getAnalyser]);
 
   return (
     <div

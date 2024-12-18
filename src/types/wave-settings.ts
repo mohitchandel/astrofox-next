@@ -14,3 +14,20 @@ export interface WaveSettings {
   rotation: number;
   opacity: number;
 }
+
+export const defaultWaveSettings = {
+  lineWidth: 1,
+  wavelength: 0,
+  smoothing: 0,
+  stroke: true,
+  strokeColor: "#FFFFFF",
+  fill: false,
+  fillColor: "#FFFFFF",
+  taperEdges: false,
+  width: 854,
+  height: 240,
+  x: 0,
+  y: 0,
+  rotation: 0,
+  opacity: 100,
+};

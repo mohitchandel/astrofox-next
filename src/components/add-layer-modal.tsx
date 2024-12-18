@@ -22,8 +22,13 @@ interface AddLayerModalProps {
 }
 
 export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
-  const { setOpenBarSpectrum, setOpenWave, setOpenImage, setOpenText } =
-    useStateContext();
+  const {
+    setOpenBarSpectrum,
+    setOpenWave,
+    setOpenImage,
+    setOpenText,
+    setOpenWaveSpectrum,
+  } = useStateContext();
 
   const displayLayers = [
     {
@@ -52,7 +57,12 @@ export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
       type: "text",
       onclick: () => setOpenText(true),
     },
-    { icon: Waves, label: "Wave Spectrum", type: "wave-spectrum" },
+    {
+      icon: Waves,
+      label: "Wave Spectrum",
+      type: "wave-spectrum",
+      onclick: () => setOpenWaveSpectrum(true),
+    },
   ];
 
   return (

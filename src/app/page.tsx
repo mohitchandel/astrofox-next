@@ -6,35 +6,33 @@ import { TextControlsPanel } from "@/components/control-panel/text-controls-pane
 import { BarControlsPanel } from "@/components/control-panel/bar-controls-panel";
 import { ImageControlsPanel } from "@/components/control-panel/image-controls-panel";
 import { JSX } from "react";
-import { BarSpectrumSettings } from "@/types/bar-spectrum";
+import {
+  BarSpectrumSettings,
+  defaultBarSpectrumSettings,
+} from "@/types/bar-spectrum";
 import WaveSurferVisualizer from "@/components/wave-surfer";
 import { WaveControlsPanel } from "@/components/control-panel/wave-controls-panel";
-import { WaveSettings } from "@/types/wave-settings";
+import { defaultWaveSettings, WaveSettings } from "@/types/wave-settings";
 import { AudioControlsPanel } from "@/components/control-panel/audio-controls-panel";
 import { LayersPanel } from "@/components/control-panel/layer-panel";
-import AudioVisualizer from "@/components/visualizer/audio-visualizer";
 import WaveVisualizer from "@/components/visualizer/sound-wave-visualizer";
 import { useStateContext } from "@/context/StateContext";
-
-interface TextStyle {
-  text: string;
-  size: number;
-  font: string;
-  isItalic: boolean;
-  isBold: boolean;
-  x: number;
-  y: number;
-  color: string;
-  rotation: number;
-  opacity: number;
-}
+import BarSpectrumVisualizer from "@/components/visualizer/bar-spectrum-visualizer";
+import { TextStyle } from "@/types/text-style";
+import {
+  defaultWaveSpectrumSettings,
+  WaveSpectrumSettings,
+} from "@/types/wave-spectrum";
+import { WaveSpectrumControlsPanel } from "@/components/control-panel/wave-spectrum-controls-panel";
+import WaveSpectrumVisualizer from "@/components/visualizer/wave-spectrum-visualizer";
 
 export default function Home(): JSX.Element {
   const [sceneDimensions, setSceneDimensions] = React.useState({
     width: 854,
     height: 480,
   });
-  const { openText, openBarSpectrum, openWave } = useStateContext();
+  const { openText, openBarSpectrum, openWave, openWaveSpectrum } =
+    useStateContext();
 
   const [textStyle, setTextStyle] = React.useState<TextStyle>({
     text: "",
@@ -50,42 +48,13 @@ export default function Home(): JSX.Element {
   });
 
   const [barSpectrumSettings, setBarSpectrumSettings] =
-    React.useState<BarSpectrumSettings>({
-      maxDb: -20,
-      minFrequency: -60,
-      maxFrequency: 20000,
-      smoothing: 0.8,
-      width: 800,
-      height: 200,
-      shadowHeight: 10,
-      barWidth: "5",
-      isBarWidthAuto: true,
-      barSpacing: "2",
-      isBarSpacingAuto: true,
-      barColor: "#00ff00",
-      shadowColor: "#003300",
-      x: 0,
-      y: 0,
-      rotation: 0,
-      opacity: 100,
-    });
+    React.useState<BarSpectrumSettings>(defaultBarSpectrumSettings);
 
-  const [waveSettings, setWaveSettings] = React.useState<WaveSettings>({
-    lineWidth: 1,
-    wavelength: 0,
-    smoothing: 0,
-    stroke: true,
-    strokeColor: "#FFFFFF",
-    fill: false,
-    fillColor: "#FFFFFF",
-    taperEdges: false,
-    width: 854,
-    height: 240,
-    x: 0,
-    y: 0,
-    rotation: 0,
-    opacity: 100,
-  });
+  const [waveSettings, setWaveSettings] =
+    React.useState<WaveSettings>(defaultWaveSettings);
+
+  const [waveSpectrumSettings, setWaveSpectrumSettings] =
+    React.useState<WaveSpectrumSettings>(defaultWaveSpectrumSettings);
 
   const handleTextChange = React.useCallback((newTextStyle: TextStyle) => {
     setTextStyle(newTextStyle);
@@ -101,9 +70,8 @@ export default function Home(): JSX.Element {
   return (
     <div className="h-screen bg-[#202020] text-zinc-100 flex flex-col overflow-hidden shadow-lg">
       <div className="flex flex-1 min-h-0 justify-between">
-        {/* Scene start*/}
         <div className="flex flex-col h-full w-full items-center justify-center">
-          <div className="flex-1 p-4 flex items-center justify-center">
+          <div className="flex-1 p-4 ">
             <div
               className="bg-black relative flex items-center justify-center shadow-lg shadow-black"
               style={{
@@ -111,29 +79,44 @@ export default function Home(): JSX.Element {
                 height: `${sceneDimensions.height}px`,
               }}
             >
-              {openText && (
-                <div
-                  style={{
-                    fontFamily: textStyle.font,
-                    fontSize: `${textStyle.size}px`,
-                    fontStyle: textStyle.isItalic ? "italic" : "normal",
-                    fontWeight: textStyle.isBold ? "bold" : "normal",
-                    transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
-                    color: textStyle.color,
-                    opacity: textStyle.opacity / 100,
-                  }}
-                >
-                  {textStyle.text}
-                </div>
-              )}
-              {openBarSpectrum && (
-                <AudioVisualizer
-                  barCount={64}
-                  barSpectrumSettings={barSpectrumSettings}
-                />
-              )}
+              <div className="absolute">
+                {openText && (
+                  <div
+                    style={{
+                      fontFamily: textStyle.font,
+                      fontSize: `${textStyle.size}px`,
+                      fontStyle: textStyle.isItalic ? "italic" : "normal",
+                      fontWeight: textStyle.isBold ? "bold" : "normal",
+                      transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
+                      color: textStyle.color,
+                      opacity: textStyle.opacity / 100,
+                    }}
+                  >
+                    {textStyle.text}
+                  </div>
+                )}
+              </div>
 
-              {openWave && <WaveVisualizer waveSettings={waveSettings} />}
+              <div className="absolute">
+                {openBarSpectrum && (
+                  <BarSpectrumVisualizer
+                    barCount={64}
+                    barSpectrumSettings={barSpectrumSettings}
+                  />
+                )}
+              </div>
+
+              <div className="absolute">
+                {openWave && <WaveVisualizer waveSettings={waveSettings} />}
+              </div>
+
+              <div className="absolute">
+                {openWaveSpectrum && (
+                  <WaveSpectrumVisualizer
+                    waveSpectrumSettings={waveSpectrumSettings}
+                  />
+                )}
+              </div>
             </div>
           </div>
           <div className="flex flex-col p-4 w-1/2 bg-transparent mx-auto">
@@ -152,6 +135,9 @@ export default function Home(): JSX.Element {
             <AudioControlsPanel />
             <BarControlsPanel onSettingsChange={setBarSpectrumSettings} />
             <WaveControlsPanel onSettingsChange={setWaveSettings} />
+            <WaveSpectrumControlsPanel
+              onSettingsChange={setWaveSpectrumSettings}
+            />
             <ImageControlsPanel />
           </div>
         </div>

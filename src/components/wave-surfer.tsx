@@ -4,7 +4,7 @@ import { useAudioElement } from "@/context/AudioContext";
 import * as React from "react";
 import WaveSurfer from "wavesurfer.js";
 
-const WaveSurferVisualizer: React.FC<{}> = () => {
+const WaveSurferVisualizer: React.FC = () => {
   const waveformRef = React.useRef<HTMLDivElement | null>(null);
   const waveSurferRef = React.useRef<WaveSurfer | null>(null);
   const { audioElement } = useAudioElement();

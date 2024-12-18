@@ -5,26 +5,28 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  BarSpectrumSettings,
-  defaultBarSpectrumSettings,
-} from "@/types/bar-spectrum";
+  defaultWaveSpectrumSettings,
+  WaveSpectrumSettings,
+} from "@/types/wave-spectrum";
 
 interface BarControlsPanelProps {
-  onSettingsChange: (settings: BarSpectrumSettings) => void;
+  onSettingsChange: (settings: WaveSpectrumSettings) => void;
 }
 
-export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
-  const [settings, setSettings] = useState<BarSpectrumSettings>(
-    defaultBarSpectrumSettings
+export function WaveSpectrumControlsPanel({
+  onSettingsChange,
+}: BarControlsPanelProps) {
+  const [settings, setSettings] = useState<WaveSpectrumSettings>(
+    defaultWaveSpectrumSettings
   );
 
   useEffect(() => {
     onSettingsChange(settings);
   }, [settings, onSettingsChange]);
 
-  const updateSetting = <K extends keyof BarSpectrumSettings>(
+  const updateSetting = <K extends keyof WaveSpectrumSettings>(
     key: K,
-    value: BarSpectrumSettings[K]
+    value: WaveSpectrumSettings[K]
   ) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
@@ -34,8 +36,8 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
       <div className="space-y-6">
         <div>
           <div className="flex items-center justify-center gap-4 mb-4">
-            <h3 className="text-xs font-medium">Bar Spectrum</h3>
-            <span className="text-xs text-zinc-400">Bar Spectrum 1</span>
+            <h3 className="text-xs font-medium">Wave Spectrum</h3>
+            <span className="text-xs text-zinc-400">Wave Spectrum 1</span>
           </div>
 
           <div className="space-y-4 text-xs">
@@ -173,63 +175,12 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
             </div>
 
             <div className="flex justify-between items-center gap-2">
-              <label className="text-zinc-400 text-xs">Shadow Height</label>
-              <div className="flex items-center gap-2 mt-1">
-                <Input
-                  value={settings.shadowHeight}
-                  onChange={(e) =>
-                    updateSetting("shadowHeight", Number(e.target.value))
-                  }
-                  className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
-                />
-                <Slider
-                  value={[settings.shadowHeight]}
-                  min={0}
-                  max={480}
-                  step={1}
-                  onValueChange={([value]) =>
-                    updateSetting("shadowHeight", value)
-                  }
-                  className="flex-1 w-1/2 bg-primary h-1"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center gap-2">
-              <Label className="text-zinc-400 text-xs">Bar Width</Label>
+              <Label className="text-zinc-400 text-xs">Stroke</Label>
               <div className="flex items-center gap-2">
-                <Input
-                  value={settings.barWidth}
-                  onChange={(e) => updateSetting("barWidth", e.target.value)}
-                  disabled={settings.isBarWidthAuto}
-                  min="1"
-                  className="mt-1 h-6 w-16 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
-                />
                 <Switch
-                  checked={settings.isBarWidthAuto}
+                  checked={settings.stroke}
                   onCheckedChange={(checked) =>
-                    updateSetting("isBarWidthAuto", checked)
-                  }
-                  className="data-[state=unchecked]:bg-[#1a1a1a]"
-                />
-                <span className="text-zinc-400">Auto</span>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center gap-2">
-              <Label className="text-zinc-400 text-xs">Bar Spacing</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={settings.barSpacing}
-                  onChange={(e) => updateSetting("barSpacing", e.target.value)}
-                  disabled={settings.isBarSpacingAuto}
-                  min="0"
-                  className="mt-1 h-6 w-16 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
-                />
-                <Switch
-                  checked={settings.isBarSpacingAuto}
-                  onCheckedChange={(checked) =>
-                    updateSetting("isBarSpacingAuto", checked)
+                    updateSetting("stroke", checked)
                   }
                   className="data-[state=unchecked]:bg-[#1a1a1a]"
                 />
@@ -238,25 +189,41 @@ export function BarControlsPanel({ onSettingsChange }: BarControlsPanelProps) {
             </div>
 
             <div className="flex justify-between items-center">
-              <label className="text-zinc-400 text-xs">Bar Color</label>
+              <label className="text-zinc-400 text-xs">Stroke Color</label>
               <div className="flex items-center gap-2 mt-1 rounded-full">
                 <Input
                   type="color"
-                  value={settings.barColor}
-                  onChange={(e) => updateSetting("barColor", e.target.value)}
+                  value={settings.strokeColor}
+                  onChange={(e) => updateSetting("strokeColor", e.target.value)}
                   className="w-8 h-8 p-1 rounded-full"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label className="text-zinc-400 text-xs">Shadow Color</Label>
-              <Input
-                type="color"
-                value={settings.shadowColor}
-                onChange={(e) => updateSetting("shadowColor", e.target.value)}
-                className="w-8 h-8 p-1 rounded-full"
-              />
+            <div className="flex justify-between items-center">
+              <label className="text-zinc-400 text-xs">Fill Color</label>
+              <div className="flex items-center gap-2 mt-1 rounded-full">
+                <Input
+                  type="color"
+                  value={settings.fillColor}
+                  onChange={(e) => updateSetting("fillColor", e.target.value)}
+                  className="w-8 h-8 p-1 rounded-full"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center gap-2">
+              <Label className="text-zinc-400 text-xs">Taper Edges</Label>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={settings.stroke}
+                  onCheckedChange={(checked) =>
+                    updateSetting("stroke", checked)
+                  }
+                  className="data-[state=unchecked]:bg-[#1a1a1a]"
+                />
+                <span className="text-zinc-400">Auto</span>
+              </div>
             </div>
 
             <div className="flex justify-between items-center gap-2">

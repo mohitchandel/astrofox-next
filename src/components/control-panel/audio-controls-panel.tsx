@@ -2,10 +2,6 @@ import { Input } from "@/components/ui/input";
 import { useAudioElement } from "@/context/AudioContext";
 import { useState, useEffect, useRef, JSX } from "react";
 
-interface AudioControlsPanelProps {
-  onAudioElementCreated: (audioElement: HTMLAudioElement) => void;
-}
-
 export function AudioControlsPanel(): JSX.Element {
   const [audioSrc, setAudioSrc] = useState<string>("");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);

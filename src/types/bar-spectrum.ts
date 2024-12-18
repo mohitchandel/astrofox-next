@@ -1,28 +1,3 @@
-export interface BarSpectrumConfig {
-  maxDB: number;
-  minFreq: number;
-  maxFreq: number;
-  smoothing: number;
-  width: number;
-  height: number;
-  shadowHeight: number;
-  barWidth: number;
-  barSpacing: number;
-  barColor: string;
-  shadowColor: string;
-  x: number;
-  y: number;
-  rotation: number;
-  opacity: number;
-  autoBarWidth: boolean;
-  autoBarSpacing: boolean;
-}
-
-export interface BarControlsPanelProps {
-  config: BarSpectrumConfig;
-  onChange: (config: BarSpectrumConfig) => void;
-}
-
 export interface BarSpectrumSettings {
   maxDb: number;
   minFrequency: number;
@@ -43,15 +18,22 @@ export interface BarSpectrumSettings {
   opacity: number;
 }
 
-export interface TextStyle {
-  text: string;
-  size: number;
-  font: string;
-  isItalic: boolean;
-  isBold: boolean;
-  x: number;
-  y: number;
-  color: string;
-  rotation: number;
-  opacity: number;
-}
+export const defaultBarSpectrumSettings = {
+  maxDb: -20,
+  minFrequency: -60,
+  maxFrequency: 20000,
+  smoothing: 0.8,
+  width: 800,
+  height: 200,
+  shadowHeight: 10,
+  barWidth: "5",
+  isBarWidthAuto: true,
+  barSpacing: "2",
+  isBarSpacingAuto: true,
+  barColor: "#00ff00",
+  shadowColor: "#003300",
+  x: 0,
+  y: 0,
+  rotation: 0,
+  opacity: 100,
+};
