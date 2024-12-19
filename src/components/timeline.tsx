@@ -54,12 +54,12 @@ export function Timeline({ dimensions, onDimensionsChange }: TimelineProps) {
 
   return (
     <>
-      <div className="h-20 bg-zinc-900 border-t border-zinc-800 p-4 flex flex-col gap-2">
+      <div className="h-18 bg-zinc-900 border-t border-zinc-800 p-4 flex flex-col gap-2">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
-            className="text-zinc-400 hover:text-white"
+            className="text-zinc-400"
             onClick={togglePlay}
           >
             {isPlaying ? (

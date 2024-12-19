@@ -30,7 +30,7 @@ export const defaultBarSpectrumSettings = {
   isBarWidthAuto: true,
   barSpacing: "2",
   isBarSpacingAuto: true,
-  barColor: "#00ff00",
+  barColor: "#ffffff",
   shadowColor: "#003300",
   x: 0,
   y: 0,

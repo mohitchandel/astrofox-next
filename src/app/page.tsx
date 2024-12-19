@@ -25,13 +25,15 @@ import {
 } from "@/types/wave-spectrum";
 import { WaveSpectrumControlsPanel } from "@/components/control-panel/wave-spectrum-controls-panel";
 import WaveSpectrumVisualizer from "@/components/visualizer/wave-spectrum-visualizer";
+import Navbar from "@/components/navbar";
+import { defaultImageSettings, ImageSettings } from "@/types/image-setting";
 
 export default function Home(): JSX.Element {
   const [sceneDimensions, setSceneDimensions] = React.useState({
     width: 854,
     height: 480,
   });
-  const { openText, openBarSpectrum, openWave, openWaveSpectrum } =
+  const { openText, openBarSpectrum, openWave, openWaveSpectrum, openImage } =
     useStateContext();
 
   const [textStyle, setTextStyle] = React.useState<TextStyle>({
@@ -56,6 +58,9 @@ export default function Home(): JSX.Element {
   const [waveSpectrumSettings, setWaveSpectrumSettings] =
     React.useState<WaveSpectrumSettings>(defaultWaveSpectrumSettings);
 
+  const [imageSettings, setImageSettings] =
+    React.useState<ImageSettings>(defaultImageSettings);
+
   const handleTextChange = React.useCallback((newTextStyle: TextStyle) => {
     setTextStyle(newTextStyle);
   }, []);
@@ -69,11 +74,12 @@ export default function Home(): JSX.Element {
 
   return (
     <div className="h-screen bg-[#202020] text-zinc-100 flex flex-col overflow-hidden shadow-lg">
+      <Navbar />
       <div className="flex flex-1 min-h-0 justify-between">
         <div className="flex flex-col h-full w-full items-center justify-center">
-          <div className="flex-1 p-4 ">
+          <div className="flex-1 p-4 relative">
             <div
-              className="bg-black relative flex items-center justify-center shadow-lg shadow-black"
+              className="bg-black relative flex items-center justify-center shadow-lg shadow-black overflow-hidden"
               style={{
                 width: `${sceneDimensions.width}px`,
                 height: `${sceneDimensions.height}px`,
@@ -117,6 +123,25 @@ export default function Home(): JSX.Element {
                   />
                 )}
               </div>
+
+              <div className="absolute">
+                {openImage && (
+                  <img
+                    src={imageSettings.url}
+                    alt="Uploaded content"
+                    style={{
+                      width: `${imageSettings.width}%`,
+                      height: `${imageSettings.height}%`,
+                      transform: `translate(${imageSettings.x}px, ${
+                        imageSettings.y
+                      }px) 
+                   rotate(${imageSettings.rotation}deg) 
+                   scale(${imageSettings.zoom / 100})`,
+                      opacity: imageSettings.opacity / 100,
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </div>
           <div className="flex flex-col p-4 w-1/2 bg-transparent mx-auto">
@@ -132,13 +157,20 @@ export default function Home(): JSX.Element {
           <div className="flex-1 overflow-y-auto bg-[#1e1e1e]">
             <div className="text-xs py-4 px-4">CONTROLS</div>
             <TextControlsPanel onTextChange={handleTextChange} />
-            <AudioControlsPanel />
-            <BarControlsPanel onSettingsChange={setBarSpectrumSettings} />
-            <WaveControlsPanel onSettingsChange={setWaveSettings} />
-            <WaveSpectrumControlsPanel
-              onSettingsChange={setWaveSpectrumSettings}
-            />
-            <ImageControlsPanel />
+            {openBarSpectrum && (
+              <BarControlsPanel onSettingsChange={setBarSpectrumSettings} />
+            )}
+            {openWave && (
+              <WaveControlsPanel onSettingsChange={setWaveSettings} />
+            )}
+            {openWaveSpectrum && (
+              <WaveSpectrumControlsPanel
+                onSettingsChange={setWaveSpectrumSettings}
+              />
+            )}
+            {openImage && imageSettings.url && (
+              <ImageControlsPanel onSettingsChange={setImageSettings} />
+            )}
           </div>
         </div>
       </div>
