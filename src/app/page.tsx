@@ -13,7 +13,6 @@ import {
 import WaveSurferVisualizer from "@/components/wave-surfer";
 import { WaveControlsPanel } from "@/components/control-panel/wave-controls-panel";
 import { defaultWaveSettings, WaveSettings } from "@/types/wave-settings";
-import { AudioControlsPanel } from "@/components/control-panel/audio-controls-panel";
 import { LayersPanel } from "@/components/control-panel/layer-panel";
 import WaveVisualizer from "@/components/visualizer/sound-wave-visualizer";
 import { useStateContext } from "@/context/StateContext";

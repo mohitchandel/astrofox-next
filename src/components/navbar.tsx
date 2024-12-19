@@ -1,13 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { useAudioElement } from "@/context/AudioContext";
-import { useState, useEffect, useRef, JSX } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "./ui/label";
 
 export default function Navbar() {
   const [audioSrc, setAudioSrc] = useState<string>("");
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { audioElement, createAudioElement } = useAudioElement();
 
   const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,19 +31,6 @@ export default function Navbar() {
       }
     };
   }, [audioSrc]);
-
-  const togglePlay = () => {
-    if (audioElement) {
-      if (isPlaying) {
-        audioElement.pause();
-      } else {
-        audioElement.play().catch((error) => {
-          console.error("Error playing audio:", error);
-        });
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
 
   return (
     <div className="h-18 bg-zinc-900 border-t border-zinc-800 overflow-hidden">
