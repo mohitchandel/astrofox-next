@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { defaultImageSettings, ImageSettings } from "@/types/image-setting";
+import { ImageControlsPanelProps } from "@/types/control-panels";
 
 export function ImageControlsPanel({
+  settings: initialSettings,
   onSettingsChange,
-}: {
-  onSettingsChange: (settings: ImageSettings) => void;
-}) {
-  const [settings, setSettings] = useState<ImageSettings>(defaultImageSettings);
+  layerNumber,
+}: ImageControlsPanelProps) {
+  const [settings, setSettings] = useState<ImageSettings>(initialSettings);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -84,7 +85,9 @@ export function ImageControlsPanel({
         <div>
           <div className="flex items-center justify-center gap-4 mb-4">
             <h3 className="text-xs font-medium">Image</h3>
-            <span className="text-xs text-zinc-400">Image 1</span>
+            <span className="text-xs text-zinc-400">
+              {`Image ${layerNumber}`}
+            </span>
           </div>
           <div className="space-y-4">
             <div>

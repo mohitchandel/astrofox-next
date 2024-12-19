@@ -8,27 +8,30 @@ import {
   defaultWaveSpectrumSettings,
   WaveSpectrumSettings,
 } from "@/types/wave-spectrum";
-
-interface BarControlsPanelProps {
-  onSettingsChange: (settings: WaveSpectrumSettings) => void;
-}
+import { WaveSpectrumControlsPanelProps } from "@/types/control-panels";
 
 export function WaveSpectrumControlsPanel({
+  settings: initialSettings,
   onSettingsChange,
-}: BarControlsPanelProps) {
+  layerNumber,
+}: WaveSpectrumControlsPanelProps) {
   const [settings, setSettings] = useState<WaveSpectrumSettings>(
-    defaultWaveSpectrumSettings
+    initialSettings || defaultWaveSpectrumSettings
   );
 
   useEffect(() => {
-    onSettingsChange(settings);
-  }, [settings, onSettingsChange]);
+    if (initialSettings) {
+      setSettings(initialSettings);
+    }
+  }, [initialSettings]);
 
   const updateSetting = <K extends keyof WaveSpectrumSettings>(
     key: K,
     value: WaveSpectrumSettings[K]
   ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+    onSettingsChange(newSettings);
   };
 
   return (
@@ -37,7 +40,9 @@ export function WaveSpectrumControlsPanel({
         <div>
           <div className="flex items-center justify-center gap-4 mb-4">
             <h3 className="text-xs font-medium">Wave Spectrum</h3>
-            <span className="text-xs text-zinc-400">Wave Spectrum 1</span>
+            <span className="text-xs text-zinc-400">
+              {`Wave Spectrum ${layerNumber}`}
+            </span>
           </div>
 
           <div className="space-y-4 text-xs">

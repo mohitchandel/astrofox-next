@@ -5,70 +5,178 @@ import { Timeline } from "@/components/timeline";
 import { TextControlsPanel } from "@/components/control-panel/text-controls-panel";
 import { BarControlsPanel } from "@/components/control-panel/bar-controls-panel";
 import { ImageControlsPanel } from "@/components/control-panel/image-controls-panel";
-import { JSX } from "react";
-import {
-  BarSpectrumSettings,
-  defaultBarSpectrumSettings,
-} from "@/types/bar-spectrum";
-import WaveSurferVisualizer from "@/components/wave-surfer";
 import { WaveControlsPanel } from "@/components/control-panel/wave-controls-panel";
-import { defaultWaveSettings, WaveSettings } from "@/types/wave-settings";
+import { WaveSpectrumControlsPanel } from "@/components/control-panel/wave-spectrum-controls-panel";
 import { LayersPanel } from "@/components/control-panel/layer-panel";
 import WaveVisualizer from "@/components/visualizer/sound-wave-visualizer";
-import { useStateContext } from "@/context/StateContext";
 import BarSpectrumVisualizer from "@/components/visualizer/bar-spectrum-visualizer";
-import { TextStyle } from "@/types/text-style";
-import {
-  defaultWaveSpectrumSettings,
-  WaveSpectrumSettings,
-} from "@/types/wave-spectrum";
-import { WaveSpectrumControlsPanel } from "@/components/control-panel/wave-spectrum-controls-panel";
 import WaveSpectrumVisualizer from "@/components/visualizer/wave-spectrum-visualizer";
+import WaveSurferVisualizer from "@/components/wave-surfer";
 import Navbar from "@/components/navbar";
-import { defaultImageSettings, ImageSettings } from "@/types/image-setting";
+import { useLayerContext } from "@/context/LayerContext";
+import { TextStyle } from "@/types/text-style";
+import { BarSpectrumSettings } from "@/types/bar-spectrum";
+import { WaveSettings } from "@/types/wave-settings";
+import { WaveSpectrumSettings } from "@/types/wave-spectrum";
+import { ImageSettings } from "@/types/image-setting";
 
-export default function Home(): JSX.Element {
-  const [sceneDimensions, setSceneDimensions] = React.useState({
-    width: 854,
-    height: 480,
-  });
-  const { openText, openBarSpectrum, openWave, openWaveSpectrum, openImage } =
-    useStateContext();
+// Type definitions
+interface SceneDimensions {
+  width: number;
+  height: number;
+}
 
-  const [textStyle, setTextStyle] = React.useState<TextStyle>({
-    text: "",
-    size: 40,
-    font: "roboto",
-    isItalic: false,
-    isBold: false,
-    x: 0,
-    y: 0,
-    color: "#FFFFFF",
-    rotation: 0,
-    opacity: 100,
-  });
+interface LayerSettings {
+  text: TextStyle;
+  barSpectrum: BarSpectrumSettings;
+  wave: WaveSettings;
+  waveSpectrum: WaveSpectrumSettings;
+  image: ImageSettings;
+}
 
-  const [barSpectrumSettings, setBarSpectrumSettings] =
-    React.useState<BarSpectrumSettings>(defaultBarSpectrumSettings);
+export default function Home() {
+  // State for scene dimensions
+  const [sceneDimensions, setSceneDimensions] = React.useState<SceneDimensions>(
+    {
+      width: 854,
+      height: 480,
+    }
+  );
 
-  const [waveSettings, setWaveSettings] =
-    React.useState<WaveSettings>(defaultWaveSettings);
+  const { layers, activeLayerId, updateLayer } = useLayerContext();
 
-  const [waveSpectrumSettings, setWaveSpectrumSettings] =
-    React.useState<WaveSpectrumSettings>(defaultWaveSpectrumSettings);
+  const activeLayer = layers.find((layer) => layer.id === activeLayerId);
 
-  const [imageSettings, setImageSettings] =
-    React.useState<ImageSettings>(defaultImageSettings);
+  const barSpectrumLayers = layers.filter(
+    (layer) => layer.type === "barSpectrum"
+  );
+  const TextLayers = layers.filter((layer) => layer.type === "text");
+  const waveSpectrumLayers = layers.filter(
+    (layer) => layer.type === "waveSpectrum"
+  );
+  const waveLayers = layers.filter((layer) => layer.type === "wave");
+  const imageLayers = layers.filter((layer) => layer.type === "image");
 
-  const handleTextChange = React.useCallback((newTextStyle: TextStyle) => {
-    setTextStyle(newTextStyle);
-  }, []);
+  const sortedLayers = [...layers].sort((a, b) => b.zIndex - a.zIndex);
 
-  const handleDimensionsChange = (newDimensions: {
-    width: number;
-    height: number;
-  }) => {
+  const getScaledSize = (baseSize: number, zoom: number) => {
+    return (baseSize * zoom) / 100;
+  };
+
+  // Handle scene dimensions change
+  const handleDimensionsChange = (newDimensions: SceneDimensions) => {
     setSceneDimensions(newDimensions);
+  };
+
+  // Type-safe handler for updating layer settings
+  const handleLayerSettingsChange = <T extends keyof LayerSettings>(
+    layerId: string,
+    layerType: T,
+    newSettings: LayerSettings[T]
+  ) => {
+    updateLayer(layerId, { settings: newSettings });
+  };
+
+  // Render individual layer
+  const renderLayer = (layer: any) => {
+    if (!layer.visible) return null;
+
+    switch (layer.type) {
+      case "text":
+        return (
+          <div
+            key={layer.id}
+            style={{
+              position: "absolute",
+              zIndex: layer.zIndex,
+              fontFamily: layer.settings.font,
+              fontSize: `${layer.settings.size}px`,
+              fontStyle: layer.settings.isItalic ? "italic" : "normal",
+              fontWeight: layer.settings.isBold ? "bold" : "normal",
+              transform: `translate(${layer.settings.x}px, ${layer.settings.y}px) rotate(${layer.settings.rotation}deg)`,
+              color: layer.settings.color,
+              opacity: layer.settings.opacity / 100,
+            }}
+          >
+            {layer.settings.text}
+          </div>
+        );
+
+      case "image":
+        return (
+          <div
+            key={layer.id}
+            style={{
+              position: "absolute",
+              zIndex: layer.zIndex,
+              transform: `rotate(${layer.settings.rotation}deg)`,
+              backgroundImage: `url(${layer.settings.url})`,
+              backgroundSize: `${getScaledSize(
+                layer.settings.width,
+                layer.settings.zoom
+              )}% ${getScaledSize(
+                layer.settings.height,
+                layer.settings.zoom
+              )}%`,
+              backgroundPosition: `calc(50% + ${layer.settings.x}px) calc(50% + ${layer.settings.y}px)`,
+              backgroundRepeat: "no-repeat",
+              opacity: layer.settings.opacity / 100,
+              inset: 0,
+            }}
+          />
+        );
+
+      case "barSpectrum":
+        return (
+          <div
+            key={layer.id}
+            style={{
+              position: "absolute",
+              zIndex: layer.zIndex,
+              transform: `translate(${layer.settings.x}px, ${layer.settings.y}px)`,
+              opacity: layer.settings.opacity / 100,
+            }}
+          >
+            <BarSpectrumVisualizer
+              barCount={64}
+              barSpectrumSettings={layer.settings}
+            />
+          </div>
+        );
+
+      case "wave":
+        return (
+          <div
+            key={layer.id}
+            style={{
+              position: "absolute",
+              zIndex: layer.zIndex,
+              transform: `translate(${layer.settings.x}px, ${layer.settings.y}px)`,
+              opacity: layer.settings.opacity / 100,
+            }}
+          >
+            <WaveVisualizer waveSettings={layer.settings} />
+          </div>
+        );
+
+      case "waveSpectrum":
+        return (
+          <div
+            key={layer.id}
+            style={{
+              position: "absolute",
+              zIndex: layer.zIndex,
+              transform: `translate(${layer.settings.x}px, ${layer.settings.y}px)`,
+              opacity: layer.settings.opacity / 100,
+            }}
+          >
+            <WaveSpectrumVisualizer waveSpectrumSettings={layer.settings} />
+          </div>
+        );
+
+      default:
+        return null;
+    }
   };
 
   return (
@@ -84,63 +192,7 @@ export default function Home(): JSX.Element {
                 height: `${sceneDimensions.height}px`,
               }}
             >
-              <div className="absolute">
-                {openText && (
-                  <div
-                    style={{
-                      fontFamily: textStyle.font,
-                      fontSize: `${textStyle.size}px`,
-                      fontStyle: textStyle.isItalic ? "italic" : "normal",
-                      fontWeight: textStyle.isBold ? "bold" : "normal",
-                      transform: `translate(${textStyle.x}px, ${textStyle.y}px) rotate(${textStyle.rotation}deg)`,
-                      color: textStyle.color,
-                      opacity: textStyle.opacity / 100,
-                    }}
-                  >
-                    {textStyle.text}
-                  </div>
-                )}
-              </div>
-
-              <div className="absolute">
-                {openBarSpectrum && (
-                  <BarSpectrumVisualizer
-                    barCount={64}
-                    barSpectrumSettings={barSpectrumSettings}
-                  />
-                )}
-              </div>
-
-              <div className="absolute">
-                {openWave && <WaveVisualizer waveSettings={waveSettings} />}
-              </div>
-
-              <div className="absolute">
-                {openWaveSpectrum && (
-                  <WaveSpectrumVisualizer
-                    waveSpectrumSettings={waveSpectrumSettings}
-                  />
-                )}
-              </div>
-
-              <div className="absolute">
-                {openImage && (
-                  <img
-                    src={imageSettings.url}
-                    alt="Uploaded content"
-                    style={{
-                      width: `${imageSettings.width}%`,
-                      height: `${imageSettings.height}%`,
-                      transform: `translate(${imageSettings.x}px, ${
-                        imageSettings.y
-                      }px) 
-                   rotate(${imageSettings.rotation}deg) 
-                   scale(${imageSettings.zoom / 100})`,
-                      opacity: imageSettings.opacity / 100,
-                    }}
-                  />
-                )}
-              </div>
+              {sortedLayers.map((layer) => renderLayer(layer))}
             </div>
           </div>
           <div className="flex flex-col p-4 w-1/2 bg-transparent mx-auto">
@@ -155,20 +207,78 @@ export default function Home(): JSX.Element {
 
           <div className="flex-1 overflow-y-auto bg-[#1e1e1e]">
             <div className="text-xs py-4 px-4">CONTROLS</div>
-            <TextControlsPanel onTextChange={handleTextChange} />
-            {openBarSpectrum && (
-              <BarControlsPanel onSettingsChange={setBarSpectrumSettings} />
-            )}
-            {openWave && (
-              <WaveControlsPanel onSettingsChange={setWaveSettings} />
-            )}
-            {openWaveSpectrum && (
-              <WaveSpectrumControlsPanel
-                onSettingsChange={setWaveSpectrumSettings}
-              />
-            )}
-            {openImage && imageSettings.url && (
-              <ImageControlsPanel onSettingsChange={setImageSettings} />
+            {activeLayer && (
+              <>
+                {activeLayer.type === "text" &&
+                  TextLayers.map((layer) => (
+                    <TextControlsPanel
+                      key={layer.id}
+                      settings={layer.settings as TextStyle}
+                      onSettingsChange={(newSettings: TextStyle) =>
+                        handleLayerSettingsChange(layer.id, "text", newSettings)
+                      }
+                      layerNumber={TextLayers.indexOf(layer) + 1}
+                    />
+                  ))}
+                {activeLayer.type === "barSpectrum" &&
+                  barSpectrumLayers.map((layer) => (
+                    <BarControlsPanel
+                      key={layer.id}
+                      settings={layer.settings as BarSpectrumSettings}
+                      onSettingsChange={(newSettings) =>
+                        handleLayerSettingsChange(
+                          layer.id,
+                          "barSpectrum",
+                          newSettings
+                        )
+                      }
+                      layerNumber={barSpectrumLayers.indexOf(layer) + 1}
+                    />
+                  ))}
+
+                {activeLayer.type === "wave" &&
+                  waveLayers.map((layer) => (
+                    <WaveControlsPanel
+                      key={layer.id}
+                      settings={layer.settings as WaveSettings}
+                      onSettingsChange={(newSettings) =>
+                        handleLayerSettingsChange(layer.id, "wave", newSettings)
+                      }
+                      layerNumber={waveLayers.indexOf(layer) + 1}
+                    />
+                  ))}
+
+                {activeLayer.type === "waveSpectrum" &&
+                  waveSpectrumLayers.map((layer) => (
+                    <WaveSpectrumControlsPanel
+                      key={layer.id}
+                      settings={layer.settings as WaveSpectrumSettings}
+                      onSettingsChange={(newSettings) =>
+                        handleLayerSettingsChange(
+                          layer.id,
+                          "waveSpectrum",
+                          newSettings
+                        )
+                      }
+                      layerNumber={waveSpectrumLayers.indexOf(layer) + 1}
+                    />
+                  ))}
+                {activeLayer.type === "image" &&
+                  imageLayers.map((layer) => (
+                    <ImageControlsPanel
+                      key={layer.id}
+                      settings={layer.settings as ImageSettings}
+                      onSettingsChange={(newSettings) =>
+                        handleLayerSettingsChange(
+                          layer.id,
+                          "image",
+                          newSettings
+                        )
+                      }
+                      layerNumber={imageLayers.indexOf(layer) + 1}
+                    />
+                  ))}
+              </>
             )}
           </div>
         </div>

@@ -1,29 +1,34 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { defaultWaveSettings, WaveSettings } from "@/types/wave-settings";
-
-interface WaveControlsPanelProps {
-  onSettingsChange: (settings: WaveSettings) => void;
-}
+import { WaveControlsPanelProps } from "@/types/control-panels";
 
 export function WaveControlsPanel({
+  settings: initialSettings,
   onSettingsChange,
+  layerNumber,
 }: WaveControlsPanelProps) {
-  const [settings, setSettings] =
-    React.useState<WaveSettings>(defaultWaveSettings);
+  const [settings, setSettings] = useState<WaveSettings>(
+    initialSettings || defaultWaveSettings
+  );
 
-  React.useEffect(() => {
-    onSettingsChange(settings);
-  }, [settings, onSettingsChange]);
+  useEffect(() => {
+    if (initialSettings) {
+      setSettings(initialSettings);
+    }
+  }, [initialSettings]);
 
   const updateSetting = <K extends keyof WaveSettings>(
     key: K,
     value: WaveSettings[K]
   ) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+    onSettingsChange(newSettings);
   };
 
   return (
@@ -32,7 +37,9 @@ export function WaveControlsPanel({
         <div>
           <div className="flex items-center justify-center gap-4 mb-4">
             <h3 className="text-xs font-medium">Sound Wave</h3>
-            <span className="text-xs text-zinc-400">Sound Wave 1</span>
+            <span className="text-xs text-zinc-400">
+              {`Sound Wave ${layerNumber}`}
+            </span>
           </div>
 
           <div className="space-y-4">

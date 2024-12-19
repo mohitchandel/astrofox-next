@@ -6,15 +6,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  BarChart3,
-  Image as ImageIcon,
-  Type,
-  Waves,
-  Box,
-  Shapes,
-} from "lucide-react";
-import { useStateContext } from "@/context/StateContext";
+import { BarChart3, Image as ImageIcon, Type, Waves } from "lucide-react";
+import { useLayerContext } from "@/context/LayerContext";
+import { defaultBarSpectrumSettings } from "@/types/bar-spectrum";
+import { defaultWaveSettings } from "@/types/wave-settings";
+import { defaultWaveSpectrumSettings } from "@/types/wave-spectrum";
+import { defaultImageSettings } from "@/types/image-setting";
+import { defalutTextSetting } from "@/types/text-style";
 
 interface AddLayerModalProps {
   isOpen: boolean;
@@ -22,48 +20,53 @@ interface AddLayerModalProps {
 }
 
 export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
-  const {
-    setOpenBarSpectrum,
-    setOpenWave,
-    setOpenImage,
-    setOpenText,
-    setOpenWaveSpectrum,
-  } = useStateContext();
+  const { addLayer } = useLayerContext();
+
+  const defaultSettings = {
+    barSpectrum: defaultBarSpectrumSettings,
+    wave: defaultWaveSettings,
+    text: defalutTextSetting,
+    waveSpectrum: defaultWaveSpectrumSettings,
+    image: defaultImageSettings,
+  };
 
   const displayLayers = [
     {
       icon: BarChart3,
       label: "Bar Spectrum",
-      type: "bar-spectrum",
-      onclick: () => setOpenBarSpectrum(true),
+      type: "barSpectrum" as const,
+      settings: defaultSettings.barSpectrum,
     },
-    { icon: Box, label: "Geometry (3D)", type: "geometry" },
-    {
-      icon: ImageIcon,
-      label: "Image",
-      type: "image",
-      onclick: () => setOpenImage(true),
-    },
-    { icon: Shapes, label: "Shape", type: "shape" },
     {
       icon: Waves,
       label: "Sound Wave",
-      type: "sound-wave",
-      onclick: () => setOpenWave(true),
+      type: "wave" as const,
+      settings: defaultSettings.wave,
     },
     {
       icon: Type,
       label: "Text",
-      type: "text",
-      onclick: () => setOpenText(true),
+      type: "text" as const,
+      settings: defaultSettings.text,
     },
     {
       icon: Waves,
       label: "Wave Spectrum",
-      type: "wave-spectrum",
-      onclick: () => setOpenWaveSpectrum(true),
+      type: "waveSpectrum" as const,
+      settings: defaultSettings.waveSpectrum,
+    },
+    {
+      icon: ImageIcon,
+      label: "Image",
+      type: "image" as const,
+      settings: defaultSettings.image,
     },
   ];
+
+  const handleAddLayer = (type: string, settings: any) => {
+    addLayer(type as any, settings);
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -96,12 +99,7 @@ export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
                 <button
                   key={layer.type}
                   className="flex flex-col items-center justify-center gap-3 h-32 bg-zinc-950 border-2 border-zinc-950 hover:border-purple-500 hover:bg-zinc-950 rounded-lg"
-                  onClick={() => {
-                    if (layer.onclick) {
-                      layer.onclick();
-                    }
-                    onClose();
-                  }}
+                  onClick={() => handleAddLayer(layer.type, layer.settings)}
                 >
                   <layer.icon className="h-8 w-8" />
                   <span className="text-sm font-normal">{layer.label}</span>
