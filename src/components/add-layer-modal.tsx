@@ -85,12 +85,12 @@ export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
             >
               Displays
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="effects"
               className="px-8 py-3 rounded-none data-[state=active]:bg-violet-600 data-[state=active]:text-white"
             >
               Effects
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="displays" className="p-6">
@@ -109,9 +109,7 @@ export function AddLayerModal({ isOpen, onClose }: AddLayerModalProps) {
           </TabsContent>
 
           <TabsContent value="effects" className="p-6">
-            <div className="grid grid-cols-5 gap-4">
-              {/* Effects content would go here */}
-            </div>
+            <div className="grid grid-cols-5 gap-4"></div>
           </TabsContent>
         </Tabs>
       </DialogContent>

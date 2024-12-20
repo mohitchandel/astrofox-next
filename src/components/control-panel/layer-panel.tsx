@@ -1,4 +1,3 @@
-// components/control-panel/layer-panel.tsx
 "use client";
 
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -15,17 +14,7 @@ import {
   Waves,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  ClassAttributes,
-  HTMLAttributes,
-  JSX,
-  JSXElementConstructor,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  Ref,
-  useState,
-} from "react";
+import { useState } from "react";
 import { AddLayerModal } from "../add-layer-modal";
 import { useLayerContext } from "@/context/LayerContext";
 import { Layer } from "@/types/layer";

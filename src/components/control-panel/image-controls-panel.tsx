@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
-import { defaultImageSettings, ImageSettings } from "@/types/image-setting";
+import { ImageSettings } from "@/types/image-setting";
 import { ImageControlsPanelProps } from "@/types/control-panels";
 
 export function ImageControlsPanel({

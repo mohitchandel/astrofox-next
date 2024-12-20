@@ -44,9 +44,7 @@ export default function Home() {
   );
 
   const { layers, activeLayerId, updateLayer } = useLayerContext();
-
   const activeLayer = layers.find((layer) => layer.id === activeLayerId);
-
   const barSpectrumLayers = layers.filter(
     (layer) => layer.type === "barSpectrum"
   );
@@ -56,19 +54,13 @@ export default function Home() {
   );
   const waveLayers = layers.filter((layer) => layer.type === "wave");
   const imageLayers = layers.filter((layer) => layer.type === "image");
-
   const sortedLayers = [...layers].sort((a, b) => b.zIndex - a.zIndex);
-
   const getScaledSize = (baseSize: number, zoom: number) => {
     return (baseSize * zoom) / 100;
   };
-
-  // Handle scene dimensions change
   const handleDimensionsChange = (newDimensions: SceneDimensions) => {
     setSceneDimensions(newDimensions);
   };
-
-  // Type-safe handler for updating layer settings
   const handleLayerSettingsChange = <T extends keyof LayerSettings>(
     layerId: string,
     layerType: T,
@@ -181,7 +173,7 @@ export default function Home() {
 
   return (
     <div className="h-screen bg-[#202020] text-zinc-100 flex flex-col overflow-hidden shadow-lg">
-      <Navbar />
+      <Navbar sceneDimensions={sceneDimensions} />
       <div className="flex flex-1 min-h-0 justify-between">
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex-1 p-4 relative">
@@ -195,6 +187,7 @@ export default function Home() {
               {sortedLayers.map((layer) => renderLayer(layer))}
             </div>
           </div>
+
           <div className="flex flex-col p-4 w-1/2 bg-transparent mx-auto">
             <WaveSurferVisualizer />
           </div>

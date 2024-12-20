@@ -18,6 +18,7 @@ export function TextControlsPanel({
   layerNumber,
 }: TextControlsPanelProps): JSX.Element {
   const [textStyle, setTextStyle] = useState<TextStyle>(initialSettings);
+  const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     setTextStyle(initialSettings);
@@ -25,7 +26,13 @@ export function TextControlsPanel({
 
   const debouncedCallback = useCallback(
     (newStyle: TextStyle) => {
-      onSettingsChange(newStyle);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        onSettingsChange(newStyle);
+      }, 100);
     },
     [onSettingsChange]
   );
@@ -40,6 +47,15 @@ export function TextControlsPanel({
     },
     [debouncedCallback]
   );
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="bg-[#2c2c2c] p-4 mt-2">
@@ -139,7 +155,6 @@ export function TextControlsPanel({
                 />
               </div>
             </div>
-
             <div className="flex justify-between items-center">
               <label className="text-zinc-400">Color</label>
               <div className="flex items-center gap-2 mt-1 rounded-full">
@@ -151,7 +166,6 @@ export function TextControlsPanel({
                 />
               </div>
             </div>
-
             <div className="flex justify-between items-center">
               <label className="text-zinc-400">Rotation</label>
               <div className="flex items-center gap-2 mt-1">
@@ -171,7 +185,6 @@ export function TextControlsPanel({
                 />
               </div>
             </div>
-
             <div className="flex justify-between items-center">
               <label className="text-zinc-400">Opacity</label>
               <div className="flex items-center gap-2 mt-1">
