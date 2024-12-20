@@ -126,8 +126,8 @@ export function BarControlsPanel({
                   <Slider
                     value={[settings.smoothing]}
                     min={0}
-                    max={22000}
-                    step={1}
+                    max={0.99}
+                    step={0.1}
                     onValueChange={([value]) =>
                       updateSetting("smoothing", value)
                     }

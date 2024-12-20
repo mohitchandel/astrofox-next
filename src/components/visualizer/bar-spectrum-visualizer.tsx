@@ -56,12 +56,12 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
         const value = dataArray[index];
         const normalizedValue = (value / 255) * barSpectrumSettings.height;
         const shadowValue =
-          normalizedValue * (barSpectrumSettings.shadowHeight / 100); // Calculate shadow height based on shadowHeight percentage
+          normalizedValue * (barSpectrumSettings.shadowHeight / 100);
 
-        // Update bar height
+        // Update bar height without transition
         bar.style.height = `${normalizedValue}px`;
 
-        // Update shadow height using the shadowHeight percentage
+        // Update shadow height
         const shadow = shadowsRef.current[index];
         if (shadow) {
           shadow.style.height = `${shadowValue}px`;
@@ -134,9 +134,6 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
         bar.style.margin = barSpectrumSettings.isBarSpacingAuto
           ? `0 ${2 / barCount}%`
           : `0 ${barSpectrumSettings.barSpacing}px`;
-        bar.style.transition = `height ${
-          barSpectrumSettings.smoothing * 2
-        }s ease-out`;
         bar.style.opacity = `${barSpectrumSettings.opacity / 100}`;
 
         // Create shadow
@@ -146,9 +143,6 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
         shadow.style.backgroundColor = barSpectrumSettings.shadowColor;
         shadow.style.opacity = "0.3";
         shadow.style.transform = "scaleY(-1)";
-        shadow.style.transition = `height ${
-          barSpectrumSettings.smoothing * 2
-        }s ease-out`;
         shadow.style.filter = "blur(1px)";
 
         barContainer.appendChild(bar);
