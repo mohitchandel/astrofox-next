@@ -113,10 +113,97 @@ export function BarControlsPanel({
                   />
                 </div>
               </div>
+              <div className="grid grid-cols-3 items-center">
+                <label className="text-zinc-400 text-xs">Smoothing</label>
+                <div className="flex items-center gap-2 mt-1 col-span-2">
+                  <Input
+                    value={settings.smoothing}
+                    onChange={(e) =>
+                      updateSetting("smoothing", Number(e.target.value))
+                    }
+                    className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                  />
+                  <Slider
+                    value={[settings.smoothing]}
+                    min={0}
+                    max={22000}
+                    step={1}
+                    onValueChange={([value]) =>
+                      updateSetting("smoothing", value)
+                    }
+                    className="flex-1 w-1/2 bg-primary h-1"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Section: Appearance Controls */}
             <div className="space-y-4 pb-4 border-b border-zinc-700">
+              <div className="grid grid-cols-3 items-center">
+                <label className="text-zinc-400 text-xs">Width</label>
+                <div className="flex items-center gap-2 mt-1 col-span-2">
+                  <Input
+                    value={settings.width}
+                    onChange={(e) =>
+                      updateSetting("width", Number(e.target.value))
+                    }
+                    className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                  />
+                  <Slider
+                    value={[settings.width]}
+                    min={0}
+                    max={700}
+                    step={1}
+                    onValueChange={([value]) => updateSetting("width", value)}
+                    className="flex-1 w-1/2 bg-primary h-1"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 items-center">
+                <label className="text-zinc-400 text-xs">Height</label>
+                <div className="flex items-center gap-2 mt-1 col-span-2">
+                  <Input
+                    value={settings.height}
+                    onChange={(e) =>
+                      updateSetting("height", Number(e.target.value))
+                    }
+                    className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                  />
+                  <Slider
+                    value={[settings.height]}
+                    min={0}
+                    max={700}
+                    step={1}
+                    onValueChange={([value]) => updateSetting("height", value)}
+                    className="flex-1 w-1/2 bg-primary h-1"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 items-center">
+                <label className="text-zinc-400 text-xs">Shadow Height</label>
+                <div className="flex items-center gap-2 mt-1 col-span-2">
+                  <Input
+                    value={settings.shadowHeight}
+                    onChange={(e) =>
+                      updateSetting("shadowHeight", Number(e.target.value))
+                    }
+                    className="w-1/3 h-6 bg-[#1a1a1a] border-zinc-700 focus:border-primary"
+                  />
+                  <Slider
+                    value={[settings.shadowHeight]}
+                    min={0}
+                    max={700}
+                    step={1}
+                    onValueChange={([value]) =>
+                      updateSetting("shadowHeight", value)
+                    }
+                    className="flex-1 w-1/2 bg-primary h-1"
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-3 items-center">
                 <Label className="text-zinc-400 text-xs">Bar Width</Label>
                 <div className="flex items-center gap-2 col-span-2">

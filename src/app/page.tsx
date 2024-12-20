@@ -178,7 +178,7 @@ export default function Home() {
         <div className="flex flex-col h-full w-full items-center justify-center">
           <div className="flex-1 p-4 relative">
             <div
-              className="bg-black relative flex items-center justify-center shadow-lg shadow-black overflow-hidden"
+              className="main-content bg-black relative flex items-center justify-center shadow-lg shadow-black overflow-hidden"
               style={{
                 width: `${sceneDimensions.width}px`,
                 height: `${sceneDimensions.height}px`,

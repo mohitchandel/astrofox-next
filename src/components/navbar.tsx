@@ -44,89 +44,8 @@ export default function Navbar({
     };
   }, [audioSrc]);
 
-  // const exportVideo = async () => {
-  //   if (!audioElement || !audioSrc) {
-  //     toast.error("Please upload an audio file first");
-  //     return;
-  //   }
-
-  //   setIsExporting(true);
-
-  //   try {
-  //     // Get the content of the visualization div
-  //     const visualizationDiv = document.querySelector(
-  //       ".bg-black.relative.flex"
-  //     );
-  //     if (!visualizationDiv) {
-  //       throw new Error("Visualization container not found");
-  //     }
-
-  //     // Create a data object with all necessary information
-  //     const exportData = {
-  //       audioSrc,
-  //       duration: audioElement.duration,
-  //       width: sceneDimensions.width,
-  //       height: sceneDimensions.height,
-  //       fps: 30,
-  //       layers: layers.map((layer) => ({
-  //         ...layer,
-  //         settings: {
-  //           ...layer.settings,
-  //           // Ensure all numeric values are actually numbers
-  //           x: Number(layer.settings.x),
-  //           y: Number(layer.settings.y),
-  //           rotation: Number(layer.settings.rotation),
-  //           opacity: Number(layer.settings.opacity),
-  //           size: layer.settings.size ? Number(layer.settings.size) : undefined,
-  //           zoom: layer.settings.zoom ? Number(layer.settings.zoom) : undefined,
-  //         },
-  //       })),
-  //     };
-
-  //     // Log the data being sent
-  //     console.log("Sending export data:", JSON.stringify(exportData));
-
-  //     const response = await fetch("/api/video-export", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(exportData),
-  //     });
-
-  //     if (!response.ok) {
-  //       let errorMessage = `Export failed with status: ${response.status}`;
-  //       try {
-  //         const errorData = await response.json();
-  //         errorMessage = errorData.details || errorData.error || errorMessage;
-  //       } catch (e) {
-  //         console.error("Error parsing error response:", e);
-  //       }
-  //       throw new Error(errorMessage);
-  //     }
-
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = "visualization.mp4";
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     document.body.removeChild(a);
-  //     window.URL.revokeObjectURL(url);
-
-  //     toast.success("Video exported successfully");
-  //   } catch (error) {
-  //     console.error("Export failed:", error);
-  //     toast.error(
-  //       error instanceof Error ? error.message : "Failed to export video"
-  //     );
-  //   } finally {
-  //     setIsExporting(false);
-  //   }
-  // };
-
   const exportVideo = async () => {
+    // Check if the audio element is created and if there's an uploaded audio file
     if (!audioElement || !audioSrc) {
       toast.error("Please upload an audio file first");
       return;
@@ -135,7 +54,7 @@ export default function Navbar({
     setIsExporting(true);
 
     try {
-      // Get the audio file from the input element
+      // Ensure that the audio file is present in the input element
       const audioInput = document.querySelector(
         'input[type="file"]'
       ) as HTMLInputElement;
@@ -145,7 +64,7 @@ export default function Navbar({
         throw new Error("No audio file found");
       }
 
-      // Create FormData to send the file
+      // Create FormData to send the audio file and additional data
       const formData = new FormData();
       formData.append("audio", audioFile);
       formData.append(
@@ -159,6 +78,7 @@ export default function Navbar({
         })
       );
 
+      // Send request to the server for video export
       const response = await fetch("/api/video-export", {
         method: "POST",
         body: formData,
@@ -175,6 +95,7 @@ export default function Navbar({
         throw new Error(errorMessage);
       }
 
+      // Handle successful response
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");

@@ -26,7 +26,7 @@ export const defaultBarSpectrumSettings = {
   width: 800,
   height: 200,
   shadowHeight: 10,
-  barWidth: "5",
+  barWidth: "2",
   isBarWidthAuto: true,
   barSpacing: "2",
   isBarSpacingAuto: true,

@@ -20,20 +20,26 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
   const { audioElement, getAnalyser } = useAudioElement();
   const containerRef = useRef<HTMLDivElement>(null);
   const barsRef = useRef<HTMLDivElement[]>([]);
+  const shadowsRef = useRef<HTMLDivElement[]>([]);
   const animationFrameRef = useRef<number>(NaN);
   const analyserRef = useRef<AnalyserNode | null>(null);
 
+  // Effect for analyzer setup and visualization
   useEffect(() => {
     if (!audioElement) return;
 
-    const { maxDb, minFrequency, smoothing } = barSpectrumSettings;
+    // Clean up previous analyzer
+    if (analyserRef.current) {
+      analyserRef.current.disconnect();
+      analyserRef.current = null;
+    }
 
-    // Get or create analyser
+    // Create new analyzer with updated settings
     analyserRef.current = getAnalyser("bar-spectrum", {
-      fftSize: 256,
-      smoothingTimeConstant: smoothing,
-      maxDecibels: Math.max(maxDb, -10),
-      minDecibels: Math.min(minFrequency, Math.max(maxDb, -10) - 1),
+      fftSize: 2048,
+      smoothingTimeConstant: barSpectrumSettings.smoothing,
+      maxDecibels: barSpectrumSettings.maxDb,
+      minDecibels: barSpectrumSettings.minFrequency,
     });
 
     if (!analyserRef.current) return;
@@ -48,13 +54,25 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
 
       barsRef.current.forEach((bar, index) => {
         const value = dataArray[index];
-        const normalizedValue = Math.max(value / 2, 10);
+        const normalizedValue = (value / 255) * barSpectrumSettings.height;
+        const shadowValue =
+          normalizedValue * (barSpectrumSettings.shadowHeight / 100); // Calculate shadow height based on shadowHeight percentage
+
+        // Update bar height
         bar.style.height = `${normalizedValue}px`;
-        bar.style.boxShadow = `0px ${barSpectrumSettings.shadowHeight}px ${barSpectrumSettings.shadowColor}`;
+
+        // Update shadow height using the shadowHeight percentage
+        const shadow = shadowsRef.current[index];
+        if (shadow) {
+          shadow.style.height = `${shadowValue}px`;
+        }
       });
     };
 
     const startVisualization = () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       visualize();
     };
 
@@ -69,41 +87,86 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      if (analyserRef.current) {
+        analyserRef.current.disconnect();
+      }
     };
   }, [audioElement, barSpectrumSettings, getAnalyser]);
 
+  // Effect for creating and updating bars
   useEffect(() => {
     if (containerRef.current) {
       barsRef.current = [];
+      shadowsRef.current = [];
       containerRef.current.innerHTML = "";
 
-      for (let i = 0; i < barCount; i++) {
-        const bar = document.createElement("div");
+      const barContainer = document.createElement("div");
+      barContainer.style.display = "flex";
+      barContainer.style.alignItems = "flex-end";
+      barContainer.style.justifyContent = "center";
+      barContainer.style.width = "100%";
+      barContainer.style.height = "100%";
+      barContainer.style.position = "relative";
 
-        bar.style.width = barSpectrumSettings.isBarWidthAuto
+      // Create shadow container
+      const shadowContainer = document.createElement("div");
+      shadowContainer.style.position = "absolute";
+      shadowContainer.style.bottom = "-10";
+      shadowContainer.style.left = "0";
+      shadowContainer.style.width = "100%";
+      shadowContainer.style.display = "flex";
+      shadowContainer.style.alignItems = "flex-start";
+      shadowContainer.style.justifyContent = "center";
+      shadowContainer.style.gap = barSpectrumSettings.isBarSpacingAuto
+        ? `${2 / barCount}%`
+        : `${barSpectrumSettings.barSpacing}px`;
+
+      for (let i = 0; i < barCount; i++) {
+        // Create bar
+        const bar = document.createElement("div");
+        const barWidth = barSpectrumSettings.isBarWidthAuto
           ? `${100 / barCount}%`
           : `${barSpectrumSettings.barWidth}px`;
 
-        bar.style.height = "10px";
+        bar.style.width = barWidth;
+        bar.style.height = "0px";
         bar.style.backgroundColor = barSpectrumSettings.barColor;
         bar.style.margin = barSpectrumSettings.isBarSpacingAuto
           ? `0 ${2 / barCount}%`
           : `0 ${barSpectrumSettings.barSpacing}px`;
-        bar.style.transition = "height 0.1s ease-out";
-        bar.style.flex = "1";
-        bar.style.alignSelf = "flex-end";
+        bar.style.transition = `height ${
+          barSpectrumSettings.smoothing * 2
+        }s ease-out`;
         bar.style.opacity = `${barSpectrumSettings.opacity / 100}`;
 
-        containerRef.current.appendChild(bar);
+        // Create shadow
+        const shadow = document.createElement("div");
+        shadow.style.width = barWidth;
+        shadow.style.height = "0px";
+        shadow.style.backgroundColor = barSpectrumSettings.shadowColor;
+        shadow.style.opacity = "0.3";
+        shadow.style.transform = "scaleY(-1)";
+        shadow.style.transition = `height ${
+          barSpectrumSettings.smoothing * 2
+        }s ease-out`;
+        shadow.style.filter = "blur(1px)";
+
+        barContainer.appendChild(bar);
+        shadowContainer.appendChild(shadow);
+
         barsRef.current.push(bar);
+        shadowsRef.current.push(shadow);
       }
+
+      containerRef.current.appendChild(barContainer);
+      containerRef.current.appendChild(shadowContainer);
     }
 
     return () => {
-      console.log("Cleaning up bars...");
       if (containerRef.current) {
         containerRef.current.innerHTML = "";
         barsRef.current = [];
+        shadowsRef.current = [];
       }
     };
   }, [barCount, barSpectrumSettings]);
@@ -116,18 +179,14 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
         width: barSpectrumSettings.width,
         height: barSpectrumSettings.height,
         position: "relative",
-        opacity: `${barSpectrumSettings.opacity / 100}`,
       }}
     >
       <div
         ref={containerRef}
         style={{
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "center",
-          gap: "2px",
           width: "100%",
           height: "100%",
+          position: "relative",
           backgroundColor: "transparent",
         }}
       ></div>
