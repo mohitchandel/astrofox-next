@@ -152,7 +152,7 @@ export function BarControlsPanel({
                   <Slider
                     value={[settings.width]}
                     min={0}
-                    max={700}
+                    max={1200}
                     step={1}
                     onValueChange={([value]) => updateSetting("width", value)}
                     className="flex-1 w-1/2 bg-primary h-1"

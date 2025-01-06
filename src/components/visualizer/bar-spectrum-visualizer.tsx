@@ -14,7 +14,7 @@ interface AudioVisualizerProps {
 }
 
 const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
-  barCount = 64,
+  barCount = 120,
   barSpectrumSettings,
 }) => {
   const { audioElement, getAnalyser } = useAudioElement();
@@ -124,9 +124,7 @@ const BarSpectrumVisualizer: React.FC<AudioVisualizerProps> = ({
       for (let i = 0; i < barCount; i++) {
         // Create bar
         const bar = document.createElement("div");
-        const barWidth = barSpectrumSettings.isBarWidthAuto
-          ? `${100 / barCount}%`
-          : `${barSpectrumSettings.barWidth}px`;
+        const barWidth = `${barSpectrumSettings.barWidth}px`;
 
         bar.style.width = barWidth;
         bar.style.height = "0px";
